@@ -1,71 +1,46 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { ExpressionOfNeedForm } from "@/components/forms/ExpressionOfNeedForm";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+
+const departments = [
+  { id: "carrieres", name: "Carrières" },
+  { id: "routes", name: "Routes" },
+  { id: "mines", name: "Mines" },
+  { id: "agriculture", name: "Agriculture" },
+  { id: "siege_social", name: "Siège Social" },
+];
 
 const Expressions = () => {
-  const { data: expressions, isLoading } = useQuery({
-    queryKey: ['expressions'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('expressions_of_need')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    },
-  });
+  const navigate = useNavigate();
+
+  const handleDepartmentSelect = (departmentId: string) => {
+    navigate(`/expressions/form/${departmentId}`);
+  };
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>New Expression of Need</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ExpressionOfNeedForm />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Expressions of Need</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <p>Loading...</p>
-            ) : expressions?.length === 0 ? (
-              <p>No expressions of need found.</p>
-            ) : (
-              <div className="space-y-4">
-                {expressions?.map((expression) => (
-                  <div
-                    key={expression.id}
-                    className="border rounded-lg p-4 space-y-2"
-                  >
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-medium">{expression.item_type}</h3>
-                      <span className="text-sm px-2 py-1 rounded-full bg-muted">
-                        {expression.status}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {expression.description}
-                    </p>
-                    <div className="flex gap-4 text-sm text-muted-foreground">
-                      <span>Quantity: {expression.quantity}</span>
-                      <span>Department: {expression.department}</span>
-                      <span>Priority: {expression.priority}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+      <div className="max-w-4xl mx-auto space-y-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white p-8 rounded-lg shadow-sm"
+        >
+          <h2 className="text-2xl font-semibold mb-6 text-[#276955]">
+            Sélectionnez votre département
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {departments.map((dept) => (
+              <Button
+                key={dept.id}
+                onClick={() => handleDepartmentSelect(dept.id)}
+                className="h-24 text-lg bg-gradient-to-br from-[#276955] to-[#E16C31] hover:opacity-90 transition-opacity"
+              >
+                {dept.name}
+              </Button>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </DashboardLayout>
   );
