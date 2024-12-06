@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download, Printer } from "lucide-react";
@@ -19,23 +18,46 @@ export const SubmissionPDFViewer = ({
   onClose,
   submission,
 }: SubmissionPDFViewerProps) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Print PDF</title>
+          </head>
+          <body style="margin:0;padding:0;">
+            <iframe
+              src="${URL.createObjectURL(new Blob([JSON.stringify(submission)], { type: 'application/pdf' }))}"
+              width="100%"
+              height="100%"
+              style="border:none;"
+              onload="window.print();window.close()"
+            ></iframe>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[80vh]">
+      <DialogContent className="max-w-screen-xl w-[95vw] h-[90vh] p-6">
         <div className="flex justify-end space-x-2 mb-4">
           <PDFDownloadLink
             document={<SubmissionPDFDocument submission={submission} />}
             fileName={`submission-${submission.id}.pdf`}
           >
-            <Button disabled={isLoading} size="sm">
-              <Download className="mr-2 h-4 w-4" />
-              Télécharger
-            </Button>
+            {({ loading }) => (
+              <Button disabled={loading} size="sm">
+                <Download className="mr-2 h-4 w-4" />
+                Télécharger
+              </Button>
+            )}
           </PDFDownloadLink>
           <Button
-            onClick={() => window.print()}
+            onClick={handlePrint}
             size="sm"
             variant="outline"
           >
@@ -45,7 +67,7 @@ export const SubmissionPDFViewer = ({
         </div>
         <div className="flex-1 w-full h-full bg-white">
           <PDFViewer
-            className="w-full h-full"
+            className="w-full h-full border-none"
             showToolbar={false}
           >
             <SubmissionPDFDocument submission={submission} />
