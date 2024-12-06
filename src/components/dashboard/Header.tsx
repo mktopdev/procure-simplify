@@ -1,11 +1,15 @@
-import { Bell, Search, Menu, FileText, ShoppingCart, Package, BarChart, ChevronDown, Home, ClipboardList } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Bell, Search, Menu, FileText, ShoppingCart, Package, BarChart, ChevronDown, Home, ClipboardList, LogOut } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export const Header = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { toast } = useToast();
 
   const menuItems = [
     { name: "Expression de Besoin", href: "/expressions", icon: FileText },
@@ -13,6 +17,23 @@ export const Header = () => {
     { name: "Bon de Commande", href: "/orders", icon: Package },
     { name: "Rapport", href: "/reports", icon: BarChart },
   ];
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la déconnexion.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Déconnexion réussie",
+        description: "Vous avez été déconnecté avec succès.",
+      });
+      navigate("/auth");
+    }
+  };
 
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm shadow-md">
@@ -97,6 +118,13 @@ export const Header = () => {
             </div>
             <button className="rounded-full p-2 hover:bg-gray-100 transition-colors">
               <Bell className="h-5 w-5 text-gray-600" />
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:text-[#E16C31] transition-colors duration-200"
+            >
+              <LogOut className="h-4 w-4" />
+              Déconnexion
             </button>
           </div>
 
