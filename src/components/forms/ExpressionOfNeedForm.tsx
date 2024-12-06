@@ -8,7 +8,7 @@ export const ExpressionOfNeedForm = () => {
   const [formData, setFormData] = useState({
     item_type: "",
     part_name: "",
-    quantity: "",
+    quantity: 1, // Changed to number
     department: "carrieres",
     priority: "",
     description: "",
@@ -22,7 +22,7 @@ export const ExpressionOfNeedForm = () => {
     try {
       const { error } = await supabase
         .from('expressions_of_need')
-        .insert([formData]);
+        .insert(formData); // Remove array brackets
 
       if (error) throw error;
 
@@ -101,7 +101,7 @@ export const ExpressionOfNeedForm = () => {
             <input
               type="number"
               value={formData.quantity}
-              onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
               className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
               required
               min="1"

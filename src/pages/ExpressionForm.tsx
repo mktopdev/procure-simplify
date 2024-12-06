@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 
 interface ExpressionFormData {
   item_type: string;
+  part_name: string; // Added required field
   quantity: number;
   priority: string;
   description: string;
@@ -40,13 +41,11 @@ const ExpressionForm = () => {
     try {
       const { error } = await supabase
         .from('expressions_of_need')
-        .insert([
-          {
-            ...data,
-            department: departmentId,
-            status: 'pending'
-          }
-        ]);
+        .insert({
+          ...data,
+          department: departmentId,
+          status: 'pending'
+        }); // Remove array brackets
 
       if (error) throw error;
 
@@ -77,6 +76,11 @@ const ExpressionForm = () => {
             Expression de Besoin - {departmentId}
           </h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Nom de la Pièce</label>
+              <Input {...register("part_name", { required: true })} />
+            </div>
+
             <div className="space-y-2">
               <label className="text-sm font-medium">Type d'Élément</label>
               <Select {...register("item_type")}>
