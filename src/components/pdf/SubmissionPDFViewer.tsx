@@ -49,12 +49,10 @@ export const SubmissionPDFViewer = ({
             document={<SubmissionPDFDocument submission={submission} />}
             fileName={`submission-${submission.id}.pdf`}
           >
-            {({ loading }) => (
-              <Button disabled={loading} size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Télécharger
-              </Button>
-            )}
+            <Button size="sm">
+              <Download className="mr-2 h-4 w-4" />
+              Télécharger
+            </Button>
           </PDFDownloadLink>
           <Button
             onClick={handlePrint}
