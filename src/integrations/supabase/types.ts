@@ -12,6 +12,7 @@ export type Database = {
       expressions_of_need: {
         Row: {
           additional_comments: string | null
+          attachment_url: string | null
           created_at: string | null
           department: string
           description: string | null
@@ -28,6 +29,7 @@ export type Database = {
         }
         Insert: {
           additional_comments?: string | null
+          attachment_url?: string | null
           created_at?: string | null
           department: string
           description?: string | null
@@ -44,6 +46,7 @@ export type Database = {
         }
         Update: {
           additional_comments?: string | null
+          attachment_url?: string | null
           created_at?: string | null
           department?: string
           description?: string | null
