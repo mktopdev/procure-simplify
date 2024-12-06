@@ -65,10 +65,26 @@ export const ExpressionOfNeedForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Get the current user's session
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session?.user) {
+      toast({
+        title: "Erreur",
+        description: "Vous devez être connecté pour soumettre une expression de besoin.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('expressions_of_need')
-        .insert(formData);
+        .insert({
+          ...formData,
+          user_id: session.user.id // Add the user_id to the insert
+        });
 
       if (error) throw error;
 
@@ -77,6 +93,7 @@ export const ExpressionOfNeedForm = () => {
         description: "Votre expression de besoin a été soumise avec succès!",
       });
     } catch (error) {
+      console.error('Submission error:', error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la soumission.",
