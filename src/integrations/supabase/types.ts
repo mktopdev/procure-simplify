@@ -90,6 +90,51 @@ export type Database = {
         }
         Relationships: []
       }
+      submission_audit_logs: {
+        Row: {
+          created_at: string | null
+          field_name: string
+          id: string
+          modified_by: string
+          new_value: string | null
+          old_value: string | null
+          submission_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          field_name: string
+          id?: string
+          modified_by: string
+          new_value?: string | null
+          old_value?: string | null
+          submission_id: string
+        }
+        Update: {
+          created_at?: string | null
+          field_name?: string
+          id?: string
+          modified_by?: string
+          new_value?: string | null
+          old_value?: string | null
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_submission"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "expressions_of_need"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submission_audit_logs_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "expressions_of_need"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
