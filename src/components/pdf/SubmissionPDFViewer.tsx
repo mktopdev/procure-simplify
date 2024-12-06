@@ -43,8 +43,8 @@ export const SubmissionPDFViewer = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-screen-xl w-[95vw] h-[90vh] p-6">
-        <div className="flex justify-end space-x-2 mb-4">
+      <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] p-4">
+        <div className="flex justify-end space-x-2 mb-2">
           <PDFDownloadLink
             document={<SubmissionPDFDocument submission={submission} />}
             fileName={`submission-${submission.id}.pdf`}
@@ -63,7 +63,7 @@ export const SubmissionPDFViewer = ({
             Imprimer
           </Button>
         </div>
-        <div className="flex-1 w-full h-full bg-white">
+        <div className="flex-1 w-full h-[calc(95vh-80px)] bg-white">
           <PDFViewer
             className="w-full h-full border-none"
             showToolbar={false}
