@@ -12,54 +12,42 @@ const Index = () => {
             <motion.h1
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-3xl font-semibold"
+              className="text-3xl font-semibold text-white"
             >
-              Welcome to Procurement Management
+              Bienvenue sur la Gestion des Achats
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="mt-2 text-gray-600"
+              className="mt-2 text-white/80"
             >
-              Submit a new expression of need or manage existing requests
+              Soumettez une nouvelle expression de besoin ou gérez les demandes existantes
             </motion.p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm"
-            >
-              <h3 className="text-lg font-medium">Pending Requests</h3>
-              <p className="text-3xl font-semibold mt-2">12</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm"
-            >
-              <h3 className="text-lg font-medium">Active Orders</h3>
-              <p className="text-3xl font-semibold mt-2">8</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-              className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm"
-            >
-              <h3 className="text-lg font-medium">Completed This Month</h3>
-              <p className="text-3xl font-semibold mt-2">45</p>
-            </motion.div>
+            {[
+              { title: "Demandes en Attente", value: "12" },
+              { title: "Commandes Actives", value: "8" },
+              { title: "Complétées ce Mois", value: "45" }
+            ].map((widget, index) => (
+              <motion.div
+                key={widget.title}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                className="bg-white/90 backdrop-blur-sm p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20"
+              >
+                <h3 className="text-lg font-medium text-[#276955]">{widget.title}</h3>
+                <p className="text-3xl font-semibold mt-2 text-[#E16C31]">{widget.value}</p>
+              </motion.div>
+            ))}
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-4">New Expression of Need</h2>
+            <h2 className="text-xl font-semibold mb-4 text-white">Nouvelle Expression de Besoin</h2>
             <ExpressionOfNeedForm />
           </div>
         </div>
