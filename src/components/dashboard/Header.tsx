@@ -1,4 +1,4 @@
-import { Bell, Search, Menu, FileText, ShoppingCart, Package, BarChart, ChevronDown } from "lucide-react";
+import { Bell, Search, Menu, FileText, ShoppingCart, Package, BarChart, ChevronDown, Home } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
@@ -18,8 +18,14 @@ export const Header = () => {
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm shadow-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center">
-            <h1 className="text-xl font-semibold text-[#276955]">Procurement</h1>
+          <div className="flex items-center gap-4">
+            <Link 
+              to="/"
+              className="flex items-center gap-2 text-[#276955] hover:text-[#E16C31] transition-colors duration-200"
+            >
+              <Home className="h-5 w-5" />
+              <h1 className="text-xl font-semibold">Procurement</h1>
+            </Link>
           </div>
 
           <nav className="hidden md:flex space-x-8">
