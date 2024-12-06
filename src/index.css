@@ -11,14 +11,6 @@
     --ring: 224 71.4% 4.1%;
     --radius: 0.75rem;
   }
-
-  .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 216 12.2% 83.9%;
-  }
 }
 
 @layer base {
@@ -42,7 +34,7 @@
   }
 
   .glass-panel {
-    @apply bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-white/20 dark:border-gray-800/20;
+    @apply bg-white/80 backdrop-blur-sm border border-white/20;
   }
 }
 
