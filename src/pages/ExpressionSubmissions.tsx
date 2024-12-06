@@ -15,10 +15,15 @@ import { Eye, Edit, Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { SubmissionPDFViewer } from "@/components/pdf/SubmissionPDFViewer";
+import type { Database } from "@/integrations/supabase/types";
+
+type Submission = Database["public"]["Tables"]["expressions_of_need"]["Row"];
 
 const ExpressionSubmissions = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
 
   const { data: submissions, isLoading } = useQuery({
     queryKey: ['expressions'],
@@ -56,9 +61,8 @@ const ExpressionSubmissions = () => {
     navigate(`/expressions/edit/${id}`);
   };
 
-  const handleView = (id: string) => {
-    // This will be implemented in the next phase
-    console.log('View submission:', id);
+  const handleView = (submission: Submission) => {
+    setSelectedSubmission(submission);
   };
 
   return (
@@ -138,7 +142,7 @@ const ExpressionSubmissions = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleView(submission.id)}
+                            onClick={() => handleView(submission)}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -159,6 +163,14 @@ const ExpressionSubmissions = () => {
           </div>
         </motion.div>
       </div>
+
+      {selectedSubmission && (
+        <SubmissionPDFViewer
+          isOpen={!!selectedSubmission}
+          onClose={() => setSelectedSubmission(null)}
+          submission={selectedSubmission}
+        />
+      )}
     </DashboardLayout>
   );
 };
