@@ -23,6 +23,8 @@ const styles = StyleSheet.create({
   page: {
     padding: 30,
     fontFamily: "Roboto",
+    position: 'relative',
+    height: '100%',
   },
   section: {
     marginBottom: 15,
@@ -47,7 +49,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   signatures: {
-    marginTop: 30,
+    position: 'absolute',
+    bottom: 100,
+    left: 0,
+    right: 0,
     flexDirection: "row",
     justifyContent: "space-between",
   },

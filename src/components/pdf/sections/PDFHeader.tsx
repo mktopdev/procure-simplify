@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logoContainer: {
-    width: 60,
+    width: 180, // Increased from 60 to 180 (3x bigger)
     marginRight: 15,
   },
   textContainer: {
