@@ -1,7 +1,11 @@
 import { Home, FileText, ShoppingCart, Package, BarChart } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
-export const Sidebar = () => {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export const Sidebar = ({ onClose }: SidebarProps) => {
   const location = useLocation();
 
   const navigation = [
@@ -24,6 +28,7 @@ export const Sidebar = () => {
             <Link
               key={item.name}
               to={item.href}
+              onClick={onClose}
               className={`group flex items-center px-3 py-2 mt-2 text-sm font-medium rounded-md transition-colors ${
                 isActive
                   ? "bg-muted text-primary"
