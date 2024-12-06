@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
-import Expressions from "./pages/Expressions";
+import Expressions from "./components/dashboard/Expressions";
 import ExpressionSubmissions from "./pages/ExpressionSubmissions";
 
 const queryClient = new QueryClient();
