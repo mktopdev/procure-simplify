@@ -4,11 +4,12 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
   Font,
 } from "@react-pdf/renderer";
-import { format } from "date-fns";
 import type { Database } from "@/integrations/supabase/types";
+import { PDFHeader } from "./sections/PDFHeader";
+import { PDFMetadata } from "./sections/PDFMetadata";
+import { PDFFooter } from "./sections/PDFFooter";
 
 type Submission = Database["public"]["Tables"]["expressions_of_need"]["Row"];
 
@@ -22,30 +23,6 @@ const styles = StyleSheet.create({
   page: {
     padding: 30,
     fontFamily: "Roboto",
-  },
-  header: {
-    marginBottom: 20,
-    borderBottom: "1px solid #276955",
-    paddingBottom: 10,
-  },
-  companyName: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#276955",
-    textTransform: "uppercase",
-  },
-  department: {
-    fontSize: 12,
-    color: "#666",
-    marginBottom: 5,
-  },
-  documentTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginTop: 10,
-    marginBottom: 20,
-    textAlign: "center",
-    color: "#E16C31",
   },
   section: {
     marginBottom: 15,
@@ -69,39 +46,6 @@ const styles = StyleSheet.create({
     width: "70%",
     fontSize: 10,
   },
-  table: {
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  tableHeader: {
-    flexDirection: "row",
-    backgroundColor: "#276955",
-    color: "#fff",
-    padding: 5,
-    fontSize: 10,
-    fontWeight: "bold",
-  },
-  tableRow: {
-    flexDirection: "row",
-    borderBottom: "1px solid #eee",
-    padding: 5,
-    fontSize: 10,
-  },
-  col1: { width: "10%" },
-  col2: { width: "30%" },
-  col3: { width: "20%" },
-  col4: { width: "10%" },
-  col5: { width: "15%" },
-  col6: { width: "15%" },
-  footer: {
-    position: "absolute",
-    bottom: 30,
-    left: 30,
-    right: 30,
-    fontSize: 8,
-    color: "#666",
-    textAlign: "center",
-  },
   signatures: {
     marginTop: 30,
     flexDirection: "row",
@@ -122,33 +66,8 @@ interface SubmissionPDFDocumentProps {
 export const SubmissionPDFDocument = ({ submission }: SubmissionPDFDocumentProps) => (
   <Document>
     <Page size="A4" style={styles.page}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.companyName}>GUITER S.A.</Text>
-        <Text style={styles.department}>
-          Direction du Transport et du Matériel
-        </Text>
-      </View>
-
-      <Text style={styles.documentTitle}>Demande d'Approvisionnement</Text>
-
-      {/* Metadata Section */}
-      <View style={styles.section}>
-        <View style={styles.row}>
-          <Text style={styles.label}>N° de Soumission:</Text>
-          <Text style={styles.value}>{submission.id}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Date d'Établissement:</Text>
-          <Text style={styles.value}>
-            {format(new Date(submission.created_at || new Date()), "dd/MM/yyyy")}
-          </Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Département:</Text>
-          <Text style={styles.value}>{submission.department}</Text>
-        </View>
-      </View>
+      <PDFHeader />
+      <PDFMetadata submission={submission} />
 
       {/* Item Details */}
       <View style={styles.section}>
@@ -199,16 +118,7 @@ export const SubmissionPDFDocument = ({ submission }: SubmissionPDFDocumentProps
         </View>
       </View>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <Text>
-          Le présent document est la propriété de GUITER S.A. Toute reproduction
-          ou distribution partielle ou totale sans accord préalable est interdite.
-        </Text>
-        <Text style={{ marginTop: 5 }}>
-          GUITER S.A. - Direction du Transport et du Matériel
-        </Text>
-      </View>
+      <PDFFooter />
     </Page>
   </Document>
 );
