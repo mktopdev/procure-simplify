@@ -11,38 +11,50 @@ export type Database = {
     Tables: {
       expressions_of_need: {
         Row: {
+          additional_comments: string | null
           created_at: string | null
           department: string
           description: string | null
           id: string
           item_type: string
+          part_name: string
+          part_reference: string | null
           priority: string
           quantity: number
           status: string | null
+          supplier: string | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          additional_comments?: string | null
           created_at?: string | null
           department: string
           description?: string | null
           id?: string
           item_type: string
+          part_name: string
+          part_reference?: string | null
           priority: string
           quantity: number
           status?: string | null
+          supplier?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          additional_comments?: string | null
           created_at?: string | null
           department?: string
           description?: string | null
           id?: string
           item_type?: string
+          part_name?: string
+          part_reference?: string | null
           priority?: string
           quantity?: number
           status?: string | null
+          supplier?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
