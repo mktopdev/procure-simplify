@@ -51,8 +51,8 @@ const styles = StyleSheet.create({
   signatures: {
     position: 'absolute',
     bottom: 100,
-    left: 0,
-    right: 0,
+    left: 30,
+    right: 30,
     flexDirection: "row",
     justifyContent: "space-between",
   },
