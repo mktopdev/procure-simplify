@@ -8,7 +8,7 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-white to-[#276955]/20">
+    <div className="min-h-screen bg-gradient-to-br from-white via-white/60 to-[#276955]/40">
       <Header />
       <main className="p-4 lg:p-8">
         <motion.div 
