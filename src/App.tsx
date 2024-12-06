@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
 import Expressions from "./pages/Expressions";
-import ExpressionForm from "./pages/ExpressionForm";
 import ExpressionSubmissions from "./pages/ExpressionSubmissions";
 
 const queryClient = new QueryClient();
@@ -21,7 +20,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/expressions" element={<Expressions />} />
-            <Route path="/expressions/form/:departmentId" element={<ExpressionForm />} />
+            <Route path="/expressions/form/:departmentId" element={<Expressions />} />
             <Route path="/expressions/submissions" element={<ExpressionSubmissions />} />
           </Routes>
         </AnimatePresence>
