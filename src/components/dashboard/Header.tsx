@@ -1,4 +1,4 @@
-import { Bell, Search, Menu, FileText, ShoppingCart, Package, BarChart, ChevronDown, Home } from "lucide-react";
+import { Bell, Search, Menu, FileText, ShoppingCart, Package, BarChart, ChevronDown, Home, ClipboardList } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
@@ -74,6 +74,16 @@ export const Header = () => {
                 </AnimatePresence>
               </button>
             </div>
+
+            <Link
+              to="/expressions/submissions"
+              className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 hover:text-[#E16C31] ${
+                location.pathname === '/expressions/submissions' ? 'text-[#E16C31]' : 'text-gray-700'
+              }`}
+            >
+              <ClipboardList className="mr-2 h-4 w-4" />
+              Suivi des Soumissions
+            </Link>
           </nav>
 
           <div className="flex items-center gap-4">

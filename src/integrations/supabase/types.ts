@@ -23,9 +23,11 @@ export type Database = {
           priority: string
           quantity: number
           status: string | null
+          status_progress: number | null
           supplier: string | null
           updated_at: string | null
           user_id: string | null
+          view_count: number | null
         }
         Insert: {
           additional_comments?: string | null
@@ -40,9 +42,11 @@ export type Database = {
           priority: string
           quantity: number
           status?: string | null
+          status_progress?: number | null
           supplier?: string | null
           updated_at?: string | null
           user_id?: string | null
+          view_count?: number | null
         }
         Update: {
           additional_comments?: string | null
@@ -57,9 +61,11 @@ export type Database = {
           priority?: string
           quantity?: number
           status?: string | null
+          status_progress?: number | null
           supplier?: string | null
           updated_at?: string | null
           user_id?: string | null
+          view_count?: number | null
         }
         Relationships: []
       }
