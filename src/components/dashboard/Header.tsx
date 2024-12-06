@@ -1,16 +1,17 @@
-import { Bell, Search, Menu, Home, FileText, ShoppingCart, Package, BarChart } from "lucide-react";
+import { Bell, Search, Menu, FileText, ShoppingCart, Package, BarChart, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 export const Header = () => {
   const location = useLocation();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const navigation = [
-    { name: "Tableau de Bord", href: "/", icon: Home },
-    { name: "Expressions de Besoin", href: "/expressions", icon: FileText },
-    { name: "Demandes d'Achat", href: "/requests", icon: ShoppingCart },
-    { name: "Bons de Commande", href: "/orders", icon: Package },
-    { name: "Rapports", href: "/reports", icon: BarChart },
+  const menuItems = [
+    { name: "Expression de Besoin", href: "/expressions", icon: FileText },
+    { name: "Demande d'Achat", href: "/requests", icon: ShoppingCart },
+    { name: "Bon de Commande", href: "/orders", icon: Package },
+    { name: "Rapport", href: "/reports", icon: BarChart },
   ];
 
   return (
@@ -22,27 +23,47 @@ export const Header = () => {
           </div>
 
           <nav className="hidden md:flex space-x-8">
-            {navigation.map((item) => {
-              const isActive = location.pathname === item.href;
-              return (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 hover:scale-105 ${
-                    isActive
-                      ? "text-[#276955] bg-[#27695522]"
-                      : "text-gray-700 hover:text-[#E16C31]"
-                  }`}
-                >
-                  <item.icon
-                    className={`mr-3 h-5 w-5 ${
-                      isActive ? "text-[#276955]" : "text-gray-400 group-hover:text-[#E16C31]"
-                    }`}
-                  />
-                  {item.name}
-                </Link>
-              );
-            })}
+            <div className="relative">
+              <button
+                onMouseEnter={() => setIsDropdownOpen(true)}
+                onMouseLeave={() => setIsDropdownOpen(false)}
+                className="group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 hover:text-[#E16C31]"
+              >
+                Fichier
+                <ChevronDown className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:text-[#E16C31]" />
+                <AnimatePresence>
+                  {isDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 mt-1 w-56 rounded-md shadow-lg bg-gradient-to-br from-[#276955] to-[#E16C31] overflow-hidden"
+                      onMouseEnter={() => setIsDropdownOpen(true)}
+                      onMouseLeave={() => setIsDropdownOpen(false)}
+                    >
+                      <div className="py-1">
+                        {menuItems.map((item) => {
+                          const isActive = location.pathname === item.href;
+                          return (
+                            <Link
+                              key={item.name}
+                              to={item.href}
+                              className={`flex items-center px-4 py-2 text-sm transition-colors duration-200 hover:bg-white/10 ${
+                                isActive ? "bg-white/20 text-white" : "text-white"
+                              }`}
+                            >
+                              <item.icon className="mr-2 h-4 w-4" />
+                              {item.name}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </button>
+            </div>
           </nav>
 
           <div className="flex items-center gap-4">
