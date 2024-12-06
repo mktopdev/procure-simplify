@@ -25,28 +25,32 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#1D1D1F",
+          DEFAULT: "#1A73E8",
           foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#86868B",
+          DEFAULT: "#34A853",
           foreground: "#FFFFFF",
         },
-        success: {
-          DEFAULT: "#34C759",
-          foreground: "#FFFFFF",
-        },
-        warning: {
-          DEFAULT: "#FF9F0A",
-          foreground: "#FFFFFF",
-        },
-        error: {
-          DEFAULT: "#FF3B30",
+        accent: {
+          DEFAULT: "#FF5722",
           foreground: "#FFFFFF",
         },
         muted: {
           DEFAULT: "#F5F5F7",
           foreground: "#1D1D1F",
+        },
+        success: {
+          DEFAULT: "#34A853",
+          foreground: "#FFFFFF",
+        },
+        warning: {
+          DEFAULT: "#FF5722",
+          foreground: "#FFFFFF",
+        },
+        error: {
+          DEFAULT: "#DC2626",
+          foreground: "#FFFFFF",
         },
       },
       borderRadius: {
@@ -63,6 +67,10 @@ export default {
           "0%": { opacity: "1", transform: "translateY(0)" },
           "100%": { opacity: "0", transform: "translateY(10px)" },
         },
+        "scale-in": {
+          "0%": { transform: "scale(0.95)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
         shimmer: {
           "100%": {
             transform: "translateX(100%)",
@@ -72,6 +80,7 @@ export default {
       animation: {
         "fade-in": "fade-in 0.3s ease-out",
         "fade-out": "fade-out 0.3s ease-out",
+        "scale-in": "scale-in 0.2s ease-out",
         shimmer: "shimmer 2s infinite",
       },
     },
