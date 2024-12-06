@@ -2,14 +2,16 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useParams } from "react-router-dom";
 
 export const ExpressionOfNeedForm = () => {
+  const { departmentId } = useParams();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     item_type: "",
     part_name: "",
-    quantity: 1, // Changed to number
-    department: "carrieres",
+    quantity: 1,
+    department: departmentId || "carrieres",
     priority: "",
     description: "",
     supplier: "",
@@ -22,7 +24,7 @@ export const ExpressionOfNeedForm = () => {
     try {
       const { error } = await supabase
         .from('expressions_of_need')
-        .insert(formData); // Remove array brackets
+        .insert(formData);
 
       if (error) throw error;
 
@@ -39,6 +41,24 @@ export const ExpressionOfNeedForm = () => {
     }
   };
 
+  // Get department display name
+  const getDepartmentName = () => {
+    switch (departmentId) {
+      case "carrieres":
+        return "Carrières";
+      case "routes":
+        return "Routes";
+      case "mines":
+        return "Mines";
+      case "agriculture":
+        return "Agriculture";
+      case "siege_social":
+        return "Siège Social";
+      default:
+        return "Département";
+    }
+  };
+
   return (
     <motion.form
       initial={{ opacity: 0, y: 10 }}
@@ -47,6 +67,10 @@ export const ExpressionOfNeedForm = () => {
       onSubmit={handleSubmit}
       className="space-y-6 bg-white p-8 rounded-lg border border-gray-200 shadow-sm"
     >
+      <div className="text-xl font-semibold text-gray-900 mb-6">
+        Expression de Besoin - {getDepartmentName()}
+      </div>
+
       <div className="grid gap-6 md:grid-cols-2">
         {/* Part Details Section */}
         <div className="space-y-4">
