@@ -1,11 +1,11 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useNavigate } from "react-router-dom";
-import { Building2, RoadSign, Mountain, TreePine, Building } from "lucide-react";
+import { Building2, Mountain, TreePine, Building, Navigation } from "lucide-react";
 import { motion } from "framer-motion";
 
 const departments = [
   { id: "carrieres", name: "Carrières", icon: Mountain },
-  { id: "routes", name: "Routes", icon: RoadSign },
+  { id: "routes", name: "Routes", icon: Navigation },
   { id: "mines", name: "Mines", icon: Building2 },
   { id: "agriculture", name: "Agriculture", icon: TreePine },
   { id: "siege_social", name: "Siège Social", icon: Building },
