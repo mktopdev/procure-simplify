@@ -1,7 +1,8 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Building2, Mountain, TreePine, Building, Navigation } from "lucide-react";
 import { motion } from "framer-motion";
+import { ExpressionOfNeedForm } from "@/components/forms/ExpressionOfNeedForm";
 
 const departments = [
   { id: "carrieres", name: "Carrières", icon: Mountain },
@@ -12,11 +13,35 @@ const departments = [
 ];
 
 const Expressions = () => {
+  const { departmentId } = useParams();
   const navigate = useNavigate();
 
   const handleDepartmentSelect = (departmentId: string) => {
     navigate(`/expressions/form/${departmentId}`);
   };
+
+  // If we have a departmentId, show the form, otherwise show department selection
+  if (departmentId) {
+    return (
+      <DashboardLayout>
+        <div className="max-w-4xl mx-auto p-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
+            <button
+              onClick={() => navigate('/expressions')}
+              className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
+            >
+              ← Retour à la sélection du département
+            </button>
+          </motion.div>
+          <ExpressionOfNeedForm />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
