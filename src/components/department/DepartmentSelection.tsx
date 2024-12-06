@@ -1,4 +1,4 @@
-import { Building2, Construction, Road, Tractor, Pickaxe } from "lucide-react";
+import { Building2, Construction, Route, Tractor, Pickaxe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -11,7 +11,7 @@ const departments = [
   {
     id: "routes",
     name: "Routes",
-    icon: Road,
+    icon: Route,
   },
   {
     id: "mines",
