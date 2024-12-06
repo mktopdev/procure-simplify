@@ -18,7 +18,11 @@ const App = () => (
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/expressions" element={<DepartmentSelection />} />
+            <Route path="/expressions" element={
+              <div className="min-h-screen bg-gradient-to-br from-[#276955] to-[#E16C31]">
+                <DepartmentSelection />
+              </div>
+            } />
           </Routes>
         </AnimatePresence>
       </BrowserRouter>
