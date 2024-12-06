@@ -34,6 +34,19 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
 
+// Define types for better type safety
+type AuditLog = {
+  id: string;
+  field_name: string;
+  old_value: string | null;
+  new_value: string | null;
+  created_at: string;
+  modified_by_profile: {
+    first_name: string | null;
+    last_name: string | null;
+  };
+};
+
 const EditSubmission = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -73,8 +86,8 @@ const EditSubmission = () => {
     },
   });
 
-  // Fetch audit logs
-  const { data: auditLogs } = useQuery({
+  // Fetch audit logs with proper typing
+  const { data: auditLogs } = useQuery<AuditLog[]>({
     queryKey: ['audit-logs', id],
     queryFn: async () => {
       const { data, error } = await supabase
