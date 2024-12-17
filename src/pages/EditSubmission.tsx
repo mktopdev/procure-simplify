@@ -109,7 +109,7 @@ const EditSubmission = () => {
           created_at,
           modified_by,
           submission_id,
-          modified_by_profile:profiles!submission_audit_logs_modified_by_fkey (
+          modified_by_profile:profiles(
             first_name,
             last_name
           )
@@ -120,7 +120,7 @@ const EditSubmission = () => {
       if (error) throw error;
 
       // Transform the data to match our AuditLog type
-      return (data as SupabaseAuditLog[]).map(log => ({
+      return (data as unknown as SupabaseAuditLog[]).map(log => ({
         ...log,
         modified_by_profile: log.modified_by_profile?.[0] || null
       }));
