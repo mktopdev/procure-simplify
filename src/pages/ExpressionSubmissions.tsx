@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { startOfToday, startOfWeek, startOfMonth, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { SubmissionsHeader } from "@/components/submissions/SubmissionsHeader";
@@ -13,10 +14,13 @@ type Submission = Database["public"]["Tables"]["expressions_of_need"]["Row"];
 
 const ExpressionSubmissions = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const statusFilter = searchParams.get('status');
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [dateFilter, setDateFilter] = useState("all");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [priorityFilter, setPriorityFilter] = useState("all");
 
   const { data: submissions, isLoading } = useQuery({
     queryKey: ['expressions'],
@@ -31,15 +35,46 @@ const ExpressionSubmissions = () => {
     },
   });
 
+  const getDateFilterStart = () => {
+    switch (dateFilter) {
+      case 'today':
+        return startOfToday();
+      case 'week':
+        return startOfWeek(new Date());
+      case 'month':
+        return startOfMonth(new Date());
+      default:
+        return null;
+    }
+  };
+
   const filteredSubmissions = submissions?.filter(submission => {
+    // Search filter
     const matchesSearch = 
       submission.part_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       submission.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
       submission.id.toLowerCase().includes(searchTerm.toLowerCase());
     
+    // Status filter
     const matchesStatus = statusFilter ? submission.status === statusFilter : true;
     
-    return matchesSearch && matchesStatus;
+    // Date filter
+    const dateStart = getDateFilterStart();
+    const matchesDate = dateStart 
+      ? parseISO(submission.created_at!) >= dateStart
+      : true;
+    
+    // Department filter
+    const matchesDepartment = departmentFilter === 'all' 
+      ? true 
+      : submission.department.toLowerCase() === departmentFilter;
+    
+    // Priority filter
+    const matchesPriority = priorityFilter === 'all'
+      ? true
+      : submission.priority === priorityFilter;
+    
+    return matchesSearch && matchesStatus && matchesDate && matchesDepartment && matchesPriority;
   });
 
   const handleEdit = (id: string) => {
@@ -48,6 +83,14 @@ const ExpressionSubmissions = () => {
 
   const handleView = (submission: Submission) => {
     setSelectedSubmission(submission);
+  };
+
+  const clearFilters = () => {
+    setSearchParams(new URLSearchParams());
+    setDateFilter('all');
+    setDepartmentFilter('all');
+    setPriorityFilter('all');
+    setSearchTerm('');
   };
 
   return (
@@ -62,6 +105,13 @@ const ExpressionSubmissions = () => {
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
             statusFilter={statusFilter}
+            dateFilter={dateFilter}
+            setDateFilter={setDateFilter}
+            departmentFilter={departmentFilter}
+            setDepartmentFilter={setDepartmentFilter}
+            priorityFilter={priorityFilter}
+            setPriorityFilter={setPriorityFilter}
+            onClearFilters={clearFilters}
           />
 
           {isLoading ? (
