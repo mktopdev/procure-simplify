@@ -1,4 +1,3 @@
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,6 +32,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 
 // Define types for better type safety
 type AuditLog = {
@@ -41,10 +41,19 @@ type AuditLog = {
   old_value: string | null;
   new_value: string | null;
   created_at: string;
+  modified_by: string;
+  submission_id: string;
   modified_by_profile: {
     first_name: string | null;
     last_name: string | null;
   } | null;
+};
+
+type SupabaseAuditLog = Omit<AuditLog, 'modified_by_profile'> & {
+  modified_by_profile: {
+    first_name: string | null;
+    last_name: string | null;
+  }[] | null;
 };
 
 const EditSubmission = () => {
@@ -98,6 +107,8 @@ const EditSubmission = () => {
           old_value,
           new_value,
           created_at,
+          modified_by,
+          submission_id,
           modified_by_profile:profiles!submission_audit_logs_modified_by_fkey (
             first_name,
             last_name
@@ -109,7 +120,7 @@ const EditSubmission = () => {
       if (error) throw error;
 
       // Transform the data to match our AuditLog type
-      return data.map(log => ({
+      return (data as SupabaseAuditLog[]).map(log => ({
         ...log,
         modified_by_profile: log.modified_by_profile?.[0] || null
       }));
