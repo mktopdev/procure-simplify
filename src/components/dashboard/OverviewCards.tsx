@@ -1,35 +1,54 @@
 import { motion } from "framer-motion";
 import { Clock, CheckCircle, XCircle, FileText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-
-const metrics = [
-  {
-    title: "Demandes en Attente",
-    value: "12",
-    icon: Clock,
-    color: "text-orange-500",
-  },
-  {
-    title: "Demandes Approuvées",
-    value: "45",
-    icon: CheckCircle,
-    color: "text-green-500",
-  },
-  {
-    title: "Demandes Rejetées",
-    value: "3",
-    icon: XCircle,
-    color: "text-red-500",
-  },
-  {
-    title: "Total ce Mois",
-    value: "60",
-    icon: FileText,
-    color: "text-blue-500",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export const OverviewCards = () => {
+  const { data: metrics } = useQuery({
+    queryKey: ['submissionMetrics'],
+    queryFn: async () => {
+      const { data: submissions, error } = await supabase
+        .from('expressions_of_need')
+        .select('status');
+      
+      if (error) throw error;
+
+      const pending = submissions.filter(s => s.status === 'pending').length;
+      const approved = submissions.filter(s => s.status === 'approved').length;
+      const rejected = submissions.filter(s => s.status === 'rejected').length;
+      const total = submissions.length;
+
+      return [
+        {
+          title: "Demandes en Attente",
+          value: pending.toString(),
+          icon: Clock,
+          color: "text-orange-500",
+        },
+        {
+          title: "Demandes Approuvées",
+          value: approved.toString(),
+          icon: CheckCircle,
+          color: "text-green-500",
+        },
+        {
+          title: "Demandes Rejetées",
+          value: rejected.toString(),
+          icon: XCircle,
+          color: "text-red-500",
+        },
+        {
+          title: "Total ce Mois",
+          value: total.toString(),
+          icon: FileText,
+          color: "text-blue-500",
+        },
+      ];
+    },
+    initialData: []
+  });
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {metrics.map((metric, index) => (
