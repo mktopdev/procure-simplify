@@ -44,7 +44,7 @@ type AuditLog = {
   modified_by_profile: {
     first_name: string | null;
     last_name: string | null;
-  };
+  } | null;
 };
 
 const EditSubmission = () => {
@@ -93,8 +93,12 @@ const EditSubmission = () => {
       const { data, error } = await supabase
         .from('submission_audit_logs')
         .select(`
-          *,
-          modified_by_profile:profiles!submission_audit_logs_modified_by_fkey(
+          id,
+          field_name,
+          old_value,
+          new_value,
+          created_at,
+          modified_by_profile:profiles!submission_audit_logs_modified_by_fkey (
             first_name,
             last_name
           )
@@ -103,7 +107,12 @@ const EditSubmission = () => {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+
+      // Transform the data to match our AuditLog type
+      return data.map(log => ({
+        ...log,
+        modified_by_profile: log.modified_by_profile?.[0] || null
+      }));
     },
   });
 
