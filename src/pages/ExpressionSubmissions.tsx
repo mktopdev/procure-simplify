@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Eye, Edit, Search } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { format } from "date-fns";
 import { SubmissionPDFViewer } from "@/components/pdf/SubmissionPDFViewer";
 import type { Database } from "@/integrations/supabase/types";
@@ -22,6 +22,8 @@ type Submission = Database["public"]["Tables"]["expressions_of_need"]["Row"];
 
 const ExpressionSubmissions = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const statusFilter = searchParams.get('status');
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
 
@@ -38,11 +40,16 @@ const ExpressionSubmissions = () => {
     },
   });
 
-  const filteredSubmissions = submissions?.filter(submission =>
-    submission.part_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    submission.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    submission.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredSubmissions = submissions?.filter(submission => {
+    const matchesSearch = 
+      submission.part_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      submission.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      submission.id.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter ? submission.status === statusFilter : true;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -74,7 +81,14 @@ const ExpressionSubmissions = () => {
           className="space-y-6"
         >
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-semibold text-gray-900">Suivi des Soumissions</h1>
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900">Suivi des Soumissions</h1>
+              {statusFilter && (
+                <p className="text-sm text-gray-500 mt-1">
+                  Filtré par statut: {statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}
+                </p>
+              )}
+            </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <input
