@@ -22,6 +22,14 @@ function App() {
           }
         />
         <Route
+          path="/expressions/submissions"
+          element={
+            <RequireAuth>
+              <ExpressionSubmissions />
+            </RequireAuth>
+          }
+        />
+        <Route
           path="/expressions/new"
           element={
             <RequireAuth>
