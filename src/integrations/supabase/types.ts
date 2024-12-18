@@ -44,9 +44,52 @@ export type Database = {
           },
         ]
       }
+      expression_attachments: {
+        Row: {
+          expression_id: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          file_url: string
+          id: string
+          uploaded_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          expression_id?: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          file_url: string
+          id?: string
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          expression_id?: string | null
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          file_url?: string
+          id?: string
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expression_attachments_expression_id_fkey"
+            columns: ["expression_id"]
+            isOneToOne: false
+            referencedRelation: "expressions_of_need"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expressions_of_need: {
         Row: {
           additional_comments: string | null
+          approval_comments: string | null
+          approval_date: string | null
           approval_status: string
           approved_at: string | null
           approved_by: string | null
@@ -55,6 +98,7 @@ export type Database = {
           category_id: string | null
           created_at: string | null
           current_department: string
+          delivery_date: string | null
           delivery_status: string | null
           department: string
           description: string | null
@@ -67,10 +111,12 @@ export type Database = {
           logistics_status: string | null
           part_name: string
           part_reference: string | null
+          payment_details: Json | null
           payment_status: string | null
           priority: string
           quantity: number
           reception_status: string | null
+          rejection_reason: string | null
           status: string | null
           status_progress: number | null
           supplier: string | null
@@ -82,6 +128,8 @@ export type Database = {
         }
         Insert: {
           additional_comments?: string | null
+          approval_comments?: string | null
+          approval_date?: string | null
           approval_status?: string
           approved_at?: string | null
           approved_by?: string | null
@@ -90,6 +138,7 @@ export type Database = {
           category_id?: string | null
           created_at?: string | null
           current_department?: string
+          delivery_date?: string | null
           delivery_status?: string | null
           department: string
           description?: string | null
@@ -102,10 +151,12 @@ export type Database = {
           logistics_status?: string | null
           part_name: string
           part_reference?: string | null
+          payment_details?: Json | null
           payment_status?: string | null
           priority: string
           quantity: number
           reception_status?: string | null
+          rejection_reason?: string | null
           status?: string | null
           status_progress?: number | null
           supplier?: string | null
@@ -117,6 +168,8 @@ export type Database = {
         }
         Update: {
           additional_comments?: string | null
+          approval_comments?: string | null
+          approval_date?: string | null
           approval_status?: string
           approved_at?: string | null
           approved_by?: string | null
@@ -125,6 +178,7 @@ export type Database = {
           category_id?: string | null
           created_at?: string | null
           current_department?: string
+          delivery_date?: string | null
           delivery_status?: string | null
           department?: string
           description?: string | null
@@ -137,10 +191,12 @@ export type Database = {
           logistics_status?: string | null
           part_name?: string
           part_reference?: string | null
+          payment_details?: Json | null
           payment_status?: string | null
           priority?: string
           quantity?: number
           reception_status?: string | null
+          rejection_reason?: string | null
           status?: string | null
           status_progress?: number | null
           supplier?: string | null
@@ -161,6 +217,27 @@ export type Database = {
         ]
       }
       item_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      item_types: {
         Row: {
           created_at: string | null
           description: string | null

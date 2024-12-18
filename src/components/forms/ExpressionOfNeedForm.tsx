@@ -7,8 +7,10 @@ import { PartDetailsSection } from "./expression/PartDetailsSection";
 import { OrderDetailsSection } from "./expression/OrderDetailsSection";
 import { AdditionalInfoSection } from "./expression/AdditionalInfoSection";
 import { WorkflowSection } from "./expression/WorkflowSection";
+import { WorkflowProgress } from "./expression/WorkflowProgress";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 export const ExpressionOfNeedForm = () => {
   const { departmentId } = useParams();
@@ -16,6 +18,25 @@ export const ExpressionOfNeedForm = () => {
   const { session } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch user profile to determine role
+  const { data: userProfile } = useQuery({
+    queryKey: ['profile', session?.user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session?.user?.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user?.id
+  });
+
+  const isAdmin = userProfile?.role === 'admin';
+  const isManager = userProfile?.role === 'manager';
 
   const [formData, setFormData] = useState({
     item_type: "",
@@ -32,7 +53,9 @@ export const ExpressionOfNeedForm = () => {
     location: "conakry",
     workflow_stage: "demande",
     workflow_status: "pending",
-    current_department: "initiator"
+    current_department: "initiator",
+    approval_comments: "",
+    rejection_reason: "",
   });
 
   const handleChange = (field: string, value: string | number) => {
@@ -135,25 +158,32 @@ export const ExpressionOfNeedForm = () => {
         Expression de Besoin - {getDepartmentName()}
       </div>
 
+      <WorkflowProgress currentStage={formData.workflow_stage} />
+
       <div className="grid gap-6 md:grid-cols-2">
         <PartDetailsSection 
           formData={formData} 
-          onChange={handleChange} 
+          onChange={handleChange}
+          isReadOnly={!isAdmin && formData.workflow_status !== 'pending'}
         />
         <OrderDetailsSection 
           formData={formData} 
-          onChange={handleChange} 
+          onChange={handleChange}
+          isReadOnly={!isAdmin && formData.workflow_status !== 'pending'}
         />
       </div>
 
-      <WorkflowSection 
-        formData={formData}
-        onChange={handleChange}
-      />
+      {(isAdmin || isManager) && (
+        <WorkflowSection 
+          formData={formData}
+          onChange={handleChange}
+        />
+      )}
 
       <AdditionalInfoSection 
         formData={formData} 
-        onChange={handleChange} 
+        onChange={handleChange}
+        isReadOnly={!isAdmin && formData.workflow_status !== 'pending'}
       />
 
       <button
