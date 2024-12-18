@@ -13,13 +13,13 @@ export const OverviewCards = () => {
     queryFn: async () => {
       const { data: submissions, error } = await supabase
         .from('expressions_of_need')
-        .select('status');
+        .select('approval_status');
       
       if (error) throw error;
 
-      const pending = submissions.filter(s => s.status === 'pending').length;
-      const approved = submissions.filter(s => s.status === 'approved').length;
-      const rejected = submissions.filter(s => s.status === 'rejected').length;
+      const pending = submissions.filter(s => s.approval_status === 'submitted').length;
+      const approved = submissions.filter(s => s.approval_status === 'approved').length;
+      const rejected = submissions.filter(s => s.approval_status === 'rejected').length;
       const total = submissions.length;
 
       return [
@@ -28,7 +28,7 @@ export const OverviewCards = () => {
           value: pending.toString(),
           icon: Clock,
           color: "text-orange-500",
-          status: "pending"
+          status: "submitted"
         },
         {
           title: "Demandes Approuvées",
