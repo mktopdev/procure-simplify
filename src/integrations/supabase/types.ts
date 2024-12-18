@@ -54,21 +54,31 @@ export type Database = {
           business_unit: string
           category_id: string | null
           created_at: string | null
+          current_department: string
+          delivery_status: string | null
           department: string
           description: string | null
+          finance_approval_status: string | null
           id: string
           item_type: string
+          last_modified_at: string | null
+          last_modified_by: string | null
           location: string
+          logistics_status: string | null
           part_name: string
           part_reference: string | null
+          payment_status: string | null
           priority: string
           quantity: number
+          reception_status: string | null
           status: string | null
           status_progress: number | null
           supplier: string | null
           updated_at: string | null
           user_id: string | null
           view_count: number | null
+          workflow_stage: string
+          workflow_status: string
         }
         Insert: {
           additional_comments?: string | null
@@ -79,21 +89,31 @@ export type Database = {
           business_unit: string
           category_id?: string | null
           created_at?: string | null
+          current_department?: string
+          delivery_status?: string | null
           department: string
           description?: string | null
+          finance_approval_status?: string | null
           id?: string
           item_type: string
+          last_modified_at?: string | null
+          last_modified_by?: string | null
           location: string
+          logistics_status?: string | null
           part_name: string
           part_reference?: string | null
+          payment_status?: string | null
           priority: string
           quantity: number
+          reception_status?: string | null
           status?: string | null
           status_progress?: number | null
           supplier?: string | null
           updated_at?: string | null
           user_id?: string | null
           view_count?: number | null
+          workflow_stage?: string
+          workflow_status?: string
         }
         Update: {
           additional_comments?: string | null
@@ -104,21 +124,31 @@ export type Database = {
           business_unit?: string
           category_id?: string | null
           created_at?: string | null
+          current_department?: string
+          delivery_status?: string | null
           department?: string
           description?: string | null
+          finance_approval_status?: string | null
           id?: string
           item_type?: string
+          last_modified_at?: string | null
+          last_modified_by?: string | null
           location?: string
+          logistics_status?: string | null
           part_name?: string
           part_reference?: string | null
+          payment_status?: string | null
           priority?: string
           quantity?: number
+          reception_status?: string | null
           status?: string | null
           status_progress?: number | null
           supplier?: string | null
           updated_at?: string | null
           user_id?: string | null
           view_count?: number | null
+          workflow_stage?: string
+          workflow_status?: string
         }
         Relationships: [
           {
@@ -258,6 +288,56 @@ export type Database = {
           {
             foreignKeyName: "submission_audit_logs_submission_id_fkey"
             columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "expressions_of_need"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_history: {
+        Row: {
+          comments: string | null
+          created_at: string | null
+          expression_id: string | null
+          id: string
+          modified_by: string | null
+          new_department: string
+          new_stage: string
+          new_status: string
+          previous_department: string
+          previous_stage: string
+          previous_status: string
+        }
+        Insert: {
+          comments?: string | null
+          created_at?: string | null
+          expression_id?: string | null
+          id?: string
+          modified_by?: string | null
+          new_department: string
+          new_stage: string
+          new_status: string
+          previous_department: string
+          previous_stage: string
+          previous_status: string
+        }
+        Update: {
+          comments?: string | null
+          created_at?: string | null
+          expression_id?: string | null
+          id?: string
+          modified_by?: string | null
+          new_department?: string
+          new_stage?: string
+          new_status?: string
+          previous_department?: string
+          previous_stage?: string
+          previous_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_history_expression_id_fkey"
+            columns: ["expression_id"]
             isOneToOne: false
             referencedRelation: "expressions_of_need"
             referencedColumns: ["id"]

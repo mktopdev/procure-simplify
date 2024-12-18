@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Clock, CheckCircle, XCircle, FileText } from "lucide-react";
+import { Clock, CheckCircle, XCircle, FileText, Package, Truck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,55 +13,53 @@ export const OverviewCards = () => {
     queryFn: async () => {
       const { data: submissions, error } = await supabase
         .from('expressions_of_need')
-        .select('approval_status');
+        .select('workflow_stage, workflow_status');
       
       if (error) throw error;
 
-      const pending = submissions.filter(s => s.approval_status === 'submitted').length;
-      const approved = submissions.filter(s => s.approval_status === 'approved').length;
-      const rejected = submissions.filter(s => s.approval_status === 'rejected').length;
+      const demande = submissions.filter(s => s.workflow_stage === 'demande').length;
+      const da = submissions.filter(s => s.workflow_stage === 'da').length;
+      const logistics = submissions.filter(s => s.workflow_stage === 'traitement').length;
+      const finance = submissions.filter(s => s.workflow_stage === 'comptabilite').length;
+      const delivery = submissions.filter(s => s.workflow_stage === 'livraison').length;
       const total = submissions.length;
 
       return [
         {
-          title: "Demandes en Attente",
-          value: pending.toString(),
+          title: "Nouvelles Demandes",
+          value: demande.toString(),
           icon: Clock,
-          color: "text-orange-500",
-          status: "submitted"
+          color: "text-blue-500",
+          stage: "demande"
         },
         {
-          title: "Demandes Approuvées",
-          value: approved.toString(),
+          title: "En Traitement Logistique",
+          value: logistics.toString(),
+          icon: Package,
+          color: "text-yellow-500",
+          stage: "traitement"
+        },
+        {
+          title: "En Finance",
+          value: finance.toString(),
           icon: CheckCircle,
           color: "text-green-500",
-          status: "approved"
+          stage: "comptabilite"
         },
         {
-          title: "Demandes Rejetées",
-          value: rejected.toString(),
-          icon: XCircle,
-          color: "text-red-500",
-          status: "rejected"
-        },
-        {
-          title: "Total ce Mois",
-          value: total.toString(),
-          icon: FileText,
-          color: "text-blue-500",
-          status: null
+          title: "En Livraison",
+          value: delivery.toString(),
+          icon: Truck,
+          color: "text-purple-500",
+          stage: "livraison"
         },
       ];
     },
     initialData: []
   });
 
-  const handleCardClick = (status: string | null) => {
-    if (status) {
-      navigate(`/expressions/submissions?status=${status}`);
-    } else {
-      navigate('/expressions/submissions');
-    }
+  const handleCardClick = (stage: string) => {
+    navigate(`/expressions/submissions?stage=${stage}`);
   };
 
   return (
@@ -72,7 +70,7 @@ export const OverviewCards = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          onClick={() => handleCardClick(metric.status)}
+          onClick={() => handleCardClick(metric.stage)}
         >
           <Card className="hover:scale-105 transition-transform duration-300 hover:shadow-lg border-t-4 cursor-pointer" 
                 style={{ borderTopColor: metric.color.replace('text-', '') }}>
