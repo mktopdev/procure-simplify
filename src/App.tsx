@@ -1,14 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "@/components/auth/RequireAuth";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 
 // Pages
-import { Index } from "@/pages/Index";
-import { Auth } from "@/pages/Auth";
-import { NewExpression } from "@/pages/NewExpression";
-import { ExpressionSubmissions } from "@/pages/ExpressionSubmissions";
+import Index from "@/pages/Index";
+import Auth from "@/pages/Auth";
+import NewExpression from "@/pages/NewExpression";
+import ExpressionSubmissions from "@/pages/ExpressionSubmissions";
 
 const queryClient = new QueryClient();
 
