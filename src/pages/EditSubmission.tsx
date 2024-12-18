@@ -74,53 +74,49 @@ const EditSubmission = () => {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
-        <div className="max-w-4xl mx-auto p-6">
-          <div>Chargement...</div>
-        </div>
-      </DashboardLayout>
+      <div className="max-w-4xl mx-auto p-6">
+        <div>Chargement...</div>
+      </div>
     );
   }
 
   return (
-    <DashboardLayout>
-      <div className="max-w-4xl mx-auto p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
-        >
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-semibold text-gray-900">
-              Modifier la Soumission
-            </h1>
-            <button
-              onClick={() => navigate('/expressions')}
-              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              Retour
-            </button>
-          </div>
+    <div className="max-w-4xl mx-auto p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
+      >
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Modifier la Soumission
+          </h1>
+          <button
+            onClick={() => navigate('/expressions')}
+            className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          >
+            Retour
+          </button>
+        </div>
 
-          {submission && (
-            <EditSubmissionForm 
-              submission={submission}
-              onSuccess={() => {
-                toast({
-                  title: "Succès",
-                  description: "Les modifications ont été enregistrées avec succès !",
-                });
-                navigate('/expressions');
-              }}
-            />
-          )}
+        {submission && (
+          <EditSubmissionForm 
+            submission={submission}
+            onSuccess={() => {
+              toast({
+                title: "Succès",
+                description: "Les modifications ont été enregistrées avec succès !",
+              });
+              navigate('/expressions');
+            }}
+          />
+        )}
 
-          {auditLogs && auditLogs.length > 0 && (
-            <AuditLogTable auditLogs={auditLogs} />
-          )}
-        </motion.div>
-      </div>
-    </DashboardLayout>
+        {auditLogs && auditLogs.length > 0 && (
+          <AuditLogTable auditLogs={auditLogs} />
+        )}
+      </motion.div>
+    </div>
   );
 };
 
