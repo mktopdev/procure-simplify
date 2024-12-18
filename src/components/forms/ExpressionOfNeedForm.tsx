@@ -56,16 +56,24 @@ export const ExpressionOfNeedForm = () => {
     }
   };
 
+  if (!session) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+      </div>
+    );
+  }
+
   return (
     <motion.form
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       onSubmit={handleSubmit}
-      className="space-y-6 bg-white p-8 rounded-lg border border-gray-200 shadow-sm"
+      className="space-y-6 bg-white p-8 rounded-lg border border-gray-200 shadow-sm max-w-7xl mx-auto my-8"
     >
       <div className="text-xl font-semibold text-gray-900 mb-6">
-        Expression de Besoin - {getDepartmentName(departmentId)}
+        Expression de Besoin {departmentId ? `- ${getDepartmentName(departmentId)}` : ''}
       </div>
 
       <WorkflowProgress currentStage={formData.workflow_stage} />
