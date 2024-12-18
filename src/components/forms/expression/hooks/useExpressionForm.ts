@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 export interface ExpressionFormData {
-  id?: string; // Add the id property as optional since it won't exist for new expressions
+  id?: string;
   item_type: string;
   part_name: string;
   quantity: number;
@@ -65,27 +65,61 @@ export const useExpressionForm = () => {
     }
 
     try {
+      const updateData: any = {
+        workflow_status: newStatus,
+      };
+
+      if (comments) {
+        if (newStatus === 'rejected') {
+          updateData.rejection_reason = comments;
+        } else if (newStatus === 'approved') {
+          updateData.approval_comments = comments;
+        }
+      }
+
+      // Update workflow stage based on status
+      if (newStatus === 'approved') {
+        updateData.workflow_stage = 'approbation';
+        updateData.current_department = 'finance';
+      } else if (newStatus === 'in_progress' && formData.workflow_stage === 'approbation') {
+        updateData.workflow_stage = 'paiement';
+        updateData.current_department = 'logistics';
+      } else if (newStatus === 'in_progress' && formData.workflow_stage === 'paiement') {
+        updateData.workflow_stage = 'livraison';
+      } else if (newStatus === 'completed') {
+        updateData.workflow_stage = 'termine';
+      }
+
       const { error } = await supabase
         .from('expressions_of_need')
-        .update({
-          workflow_status: newStatus,
-          ...(comments && { 
-            rejection_reason: newStatus === 'rejected' ? comments : null,
-            approval_comments: newStatus === 'approved' ? comments : null
-          })
-        })
+        .update(updateData)
         .eq('id', formData.id);
 
       if (error) throw error;
 
+      // Update local state
       setFormData(prev => ({
         ...prev,
-        workflow_status: newStatus,
-        ...(comments && {
-          rejection_reason: newStatus === 'rejected' ? comments : prev.rejection_reason,
-          approval_comments: newStatus === 'approved' ? comments : prev.approval_comments
-        })
+        ...updateData
       }));
+
+      // Add to workflow history
+      const { error: historyError } = await supabase
+        .from('workflow_history')
+        .insert({
+          expression_id: formData.id,
+          previous_stage: formData.workflow_stage,
+          new_stage: updateData.workflow_stage || formData.workflow_stage,
+          previous_status: formData.workflow_status,
+          new_status: newStatus,
+          previous_department: formData.current_department,
+          new_department: updateData.current_department || formData.current_department,
+          modified_by: session?.user?.id,
+          comments: comments || `Status updated to ${newStatus}`
+        });
+
+      if (historyError) throw historyError;
+
     } catch (error: any) {
       throw new Error(error.message || "Failed to update status");
     }
