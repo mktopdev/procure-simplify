@@ -77,7 +77,7 @@ export const RecentSubmissions = () => {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Soumissions Récentes</CardTitle>
         <Button variant="outline" size="sm" asChild>
-          <Link to="/expressions/submissions">
+          <Link to="/expressions">
             Voir Tout
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
