@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 export interface ExpressionFormData {
+  id?: string; // Add the id property as optional since it won't exist for new expressions
   item_type: string;
   part_name: string;
   quantity: number;
@@ -59,6 +60,10 @@ export const useExpressionForm = () => {
   };
 
   const handleStatusChange = async (newStatus: string, comments?: string) => {
+    if (!formData.id) {
+      throw new Error("Cannot update status: Expression ID is missing");
+    }
+
     try {
       const { error } = await supabase
         .from('expressions_of_need')
