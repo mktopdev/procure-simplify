@@ -9,15 +9,56 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      approval_history: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          expression_id: string | null
+          id: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          expression_id?: string | null
+          id?: string
+          status: string
+          user_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          expression_id?: string | null
+          id?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approval_history_expression_id_fkey"
+            columns: ["expression_id"]
+            isOneToOne: false
+            referencedRelation: "expressions_of_need"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expressions_of_need: {
         Row: {
           additional_comments: string | null
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
           attachment_url: string | null
+          business_unit: string
+          category_id: string | null
           created_at: string | null
           department: string
           description: string | null
           id: string
           item_type: string
+          location: string
           part_name: string
           part_reference: string | null
           priority: string
@@ -31,12 +72,18 @@ export type Database = {
         }
         Insert: {
           additional_comments?: string | null
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           attachment_url?: string | null
+          business_unit: string
+          category_id?: string | null
           created_at?: string | null
           department: string
           description?: string | null
           id?: string
           item_type: string
+          location: string
           part_name: string
           part_reference?: string | null
           priority: string
@@ -50,12 +97,18 @@ export type Database = {
         }
         Update: {
           additional_comments?: string | null
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           attachment_url?: string | null
+          business_unit?: string
+          category_id?: string | null
           created_at?: string | null
           department?: string
           description?: string | null
           id?: string
           item_type?: string
+          location?: string
           part_name?: string
           part_reference?: string | null
           priority?: string
@@ -67,25 +120,101 @@ export type Database = {
           user_id?: string | null
           view_count?: number | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "fk_category"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "item_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      item_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
         Relationships: []
+      }
+      notification_logs: {
+        Row: {
+          created_at: string | null
+          expression_id: string | null
+          id: string
+          message: string
+          status: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expression_id?: string | null
+          id?: string
+          message: string
+          status?: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expression_id?: string | null
+          id?: string
+          message?: string
+          status?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_logs_expression_id_fkey"
+            columns: ["expression_id"]
+            isOneToOne: false
+            referencedRelation: "expressions_of_need"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
+          business_unit: string | null
           first_name: string | null
           id: string
           last_name: string | null
+          location: string | null
+          role: string
           updated_at: string | null
         }
         Insert: {
+          business_unit?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
+          location?: string | null
+          role?: string
           updated_at?: string | null
         }
         Update: {
+          business_unit?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
+          location?: string | null
+          role?: string
           updated_at?: string | null
         }
         Relationships: []
