@@ -1,4 +1,4 @@
-import { ShoppingCart, ChevronDown } from "lucide-react";
+import { ShoppingCart, FileText, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
@@ -9,6 +9,7 @@ export const FileMenu = () => {
 
   const menuItems = [
     { name: "Demande d'Achat", href: "/expressions/submissions", icon: ShoppingCart },
+    { name: "Suivi des Soumissions", href: "/expressions/submissions", icon: FileText },
   ];
 
   return (
