@@ -8,6 +8,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { SubmissionsHeader } from "@/components/submissions/SubmissionsHeader";
 import { SubmissionTable } from "@/components/submissions/SubmissionTable";
 import { SubmissionPDFViewer } from "@/components/pdf/SubmissionPDFViewer";
+import { ExpressionOfNeedForm } from "@/components/forms/ExpressionOfNeedForm";
 import type { Database } from "@/integrations/supabase/types";
 
 type Submission = Database["public"]["Tables"]["expressions_of_need"]["Row"];
@@ -21,6 +22,7 @@ const ExpressionSubmissions = () => {
   const [dateFilter, setDateFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
+  const [showForm, setShowForm] = useState(false);
 
   const { data: submissions, isLoading } = useQuery({
     queryKey: ['expressions'],
@@ -49,27 +51,22 @@ const ExpressionSubmissions = () => {
   };
 
   const filteredSubmissions = submissions?.filter(submission => {
-    // Search filter
     const matchesSearch = 
       submission.part_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       submission.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
       submission.id.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Status filter
     const matchesStatus = statusFilter ? submission.status === statusFilter : true;
     
-    // Date filter
     const dateStart = getDateFilterStart();
     const matchesDate = dateStart 
       ? parseISO(submission.created_at!) >= dateStart
       : true;
     
-    // Department filter
     const matchesDepartment = departmentFilter === 'all' 
       ? true 
       : submission.department.toLowerCase() === departmentFilter;
     
-    // Priority filter
     const matchesPriority = priorityFilter === 'all'
       ? true
       : submission.priority === priorityFilter;
@@ -101,27 +98,45 @@ const ExpressionSubmissions = () => {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
-          <SubmissionsHeader 
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            statusFilter={statusFilter}
-            dateFilter={dateFilter}
-            setDateFilter={setDateFilter}
-            departmentFilter={departmentFilter}
-            setDepartmentFilter={setDepartmentFilter}
-            priorityFilter={priorityFilter}
-            setPriorityFilter={setPriorityFilter}
-            onClearFilters={clearFilters}
-          />
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-semibold text-gray-900">
+              {showForm ? "Nouvelle Demande d'Achat" : "Suivi des Soumissions"}
+            </h1>
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+            >
+              {showForm ? "Voir les Soumissions" : "Nouvelle Demande"}
+            </button>
+          </div>
 
-          {isLoading ? (
-            <div className="text-center py-4">Chargement...</div>
-          ) : filteredSubmissions && (
-            <SubmissionTable 
-              submissions={filteredSubmissions}
-              onEdit={handleEdit}
-              onView={handleView}
-            />
+          {showForm ? (
+            <ExpressionOfNeedForm />
+          ) : (
+            <>
+              <SubmissionsHeader 
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                statusFilter={statusFilter}
+                dateFilter={dateFilter}
+                setDateFilter={setDateFilter}
+                departmentFilter={departmentFilter}
+                setDepartmentFilter={setDepartmentFilter}
+                priorityFilter={priorityFilter}
+                setPriorityFilter={setPriorityFilter}
+                onClearFilters={clearFilters}
+              />
+
+              {isLoading ? (
+                <div className="text-center py-4">Chargement...</div>
+              ) : filteredSubmissions && (
+                <SubmissionTable 
+                  submissions={filteredSubmissions}
+                  onEdit={handleEdit}
+                  onView={handleView}
+                />
+              )}
+            </>
           )}
         </motion.div>
       </div>

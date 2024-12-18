@@ -1,27 +1,33 @@
-import { ShoppingCart, FileText, ChevronDown } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { File } from "lucide-react";
 
 export const FileMenu = () => {
-  const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const menuItems = [
-    { name: "Demande d'Achat", href: "/expressions/submissions", icon: ShoppingCart },
-    { name: "Suivi des Soumissions", href: "/expressions/submissions", icon: FileText },
+    {
+      label: "Demande d'Achat",
+      path: "/expressions/submissions",
+    },
+    {
+      label: "Suivi des Soumissions",
+      path: "/expressions/submissions",
+    },
   ];
 
   return (
-    <div className="relative group">
+    <div className="relative">
       <button
-        className="group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 hover:text-[#E16C31]"
+        className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
         onMouseEnter={() => setIsDropdownOpen(true)}
         onMouseLeave={() => setIsDropdownOpen(false)}
       >
-        Fichier
-        <ChevronDown className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:text-[#E16C31]" />
+        <File className="w-4 h-4" />
+        <span>Fichier</span>
       </button>
+
       <AnimatePresence>
         {isDropdownOpen && (
           <motion.div
@@ -34,22 +40,16 @@ export const FileMenu = () => {
             onMouseLeave={() => setIsDropdownOpen(false)}
           >
             <div className="py-1">
-              {menuItems.map((item) => {
-                const isActive = location.pathname === item.href;
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={`flex items-center px-4 py-2 text-sm transition-colors duration-200 hover:bg-white/10 ${
-                      isActive ? "bg-white/20 text-white" : "text-white"
-                    }`}
-                  >
-                    <Icon className="mr-2 h-4 w-4" />
-                    {item.name}
-                  </Link>
-                );
-              })}
+              {menuItems.map((item, index) => (
+                <Link
+                  key={index}
+                  to={item.path}
+                  className="block px-4 py-2 text-sm text-white hover:bg-white/10"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </motion.div>
         )}
