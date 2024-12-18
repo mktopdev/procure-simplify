@@ -7,7 +7,15 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import { WorkflowProgress } from "./WorkflowProgress";
+import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
 
 interface WorkflowSectionProps {
   formData: {
@@ -65,6 +73,43 @@ export const WorkflowSection = ({
     setShowComments(false);
   };
 
+  const getStatusAlert = () => {
+    switch (formData.workflow_status) {
+      case 'approved':
+        return (
+          <Alert className="bg-green-50 border-green-200">
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <AlertTitle>Demande Approuvée</AlertTitle>
+            <AlertDescription>
+              Cette demande a été approuvée et est en cours de traitement.
+            </AlertDescription>
+          </Alert>
+        );
+      case 'rejected':
+        return (
+          <Alert className="bg-red-50 border-red-200">
+            <XCircle className="h-4 w-4 text-red-600" />
+            <AlertTitle>Demande Rejetée</AlertTitle>
+            <AlertDescription>
+              Cette demande a été rejetée. Veuillez consulter les commentaires pour plus de détails.
+            </AlertDescription>
+          </Alert>
+        );
+      case 'pending':
+        return (
+          <Alert className="bg-yellow-50 border-yellow-200">
+            <AlertCircle className="h-4 w-4 text-yellow-600" />
+            <AlertTitle>En Attente d'Approbation</AlertTitle>
+            <AlertDescription>
+              Cette demande est en attente d'approbation par le service concerné.
+            </AlertDescription>
+          </Alert>
+        );
+      default:
+        return null;
+    }
+  };
+
   const renderActionButtons = () => {
     if (!userRole) return null;
 
@@ -76,14 +121,17 @@ export const WorkflowSection = ({
             <div className="flex gap-4">
               <Button 
                 variant="default" 
+                className="bg-green-600 hover:bg-green-700"
                 onClick={() => handleAction('approve')}
               >
+                <CheckCircle2 className="mr-2 h-4 w-4" />
                 Approuver
               </Button>
               <Button 
                 variant="destructive" 
                 onClick={() => handleAction('reject')}
               >
+                <XCircle className="mr-2 h-4 w-4" />
                 Rejeter
               </Button>
             </div>
@@ -131,11 +179,21 @@ export const WorkflowSection = ({
     <Card>
       <CardHeader>
         <CardTitle>Workflow</CardTitle>
-        <CardDescription>
-          État actuel: {formData.workflow_stage} - {formData.workflow_status}
+        <CardDescription className="flex items-center gap-2">
+          <Badge variant="outline" className="text-sm">
+            {formData.workflow_stage}
+          </Badge>
+          <span>-</span>
+          <Badge variant="outline" className="text-sm">
+            {formData.workflow_status}
+          </Badge>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <WorkflowProgress currentStage={formData.workflow_stage} />
+        
+        {getStatusAlert()}
+        
         {renderActionButtons()}
         
         {showComments && (
