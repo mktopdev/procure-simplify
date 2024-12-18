@@ -2,16 +2,20 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { PartDetailsSection } from "./expression/PartDetailsSection";
 import { OrderDetailsSection } from "./expression/OrderDetailsSection";
 import { AdditionalInfoSection } from "./expression/AdditionalInfoSection";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { Loader2 } from "lucide-react";
 
 export const ExpressionOfNeedForm = () => {
   const { departmentId } = useParams();
   const { toast } = useToast();
   const { session } = useAuth();
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState({
     item_type: "",
     part_name: "",
@@ -23,9 +27,8 @@ export const ExpressionOfNeedForm = () => {
     part_reference: "",
     additional_comments: "",
     attachment_url: "",
-    // Add new required fields
     business_unit: departmentId || "carrieres",
-    location: "conakry", // Default to conakry as per schema
+    location: "conakry",
   });
 
   const handleChange = (field: string, value: string | number) => {
@@ -40,12 +43,14 @@ export const ExpressionOfNeedForm = () => {
     
     if (!session?.user) {
       toast({
-        title: "Erreur",
+        title: "Erreur d'authentification",
         description: "Vous devez être connecté pour soumettre une expression de besoin.",
         variant: "destructive",
       });
       return;
     }
+
+    setIsSubmitting(true);
 
     try {
       const { error } = await supabase
@@ -53,7 +58,7 @@ export const ExpressionOfNeedForm = () => {
         .insert({
           ...formData,
           user_id: session.user.id,
-          approval_status: 'submitted', // Add default approval status
+          approval_status: 'submitted',
         });
 
       if (error) throw error;
@@ -62,13 +67,18 @@ export const ExpressionOfNeedForm = () => {
         title: "Succès",
         description: "Votre expression de besoin a été soumise avec succès!",
       });
-    } catch (error) {
+
+      // Navigate back to expressions list after successful submission
+      navigate('/expressions');
+    } catch (error: any) {
       console.error('Submission error:', error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la soumission.",
+        description: error.message || "Une erreur est survenue lors de la soumission.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -120,9 +130,17 @@ export const ExpressionOfNeedForm = () => {
 
       <button
         type="submit"
-        className="w-full rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+        disabled={isSubmitting}
+        className="w-full rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
       >
-        Soumettre l'Expression de Besoin
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Soumission en cours...
+          </>
+        ) : (
+          "Soumettre l'Expression de Besoin"
+        )}
       </button>
     </motion.form>
   );
