@@ -29,39 +29,45 @@ export const WorkflowSection = ({
   const [comments, setComments] = useState("");
   const [showComments, setShowComments] = useState(false);
 
-  const handleAction = (action: string) => {
+  const handleAction = async (action: string) => {
     if (action === 'reject') {
       setShowComments(true);
       return;
     }
 
     let newStatus = '';
+    let newStage = formData.workflow_stage;
+    
     switch (action) {
       case 'approve':
         newStatus = 'approved';
+        newStage = 'approbation';
         break;
       case 'mark_paid':
         newStatus = 'in_progress';
-        onChange('workflow_stage', 'paiement');
+        newStage = 'paiement';
         break;
       case 'mark_shipped':
         newStatus = 'in_progress';
-        onChange('workflow_stage', 'livraison');
+        newStage = 'livraison';
         break;
       case 'mark_delivered':
         newStatus = 'completed';
-        onChange('workflow_stage', 'termine');
+        newStage = 'termine';
         break;
       default:
         return;
     }
 
-    onStatusChange(newStatus, comments);
+    onChange('workflow_stage', newStage);
+    await onStatusChange(newStatus, comments);
     setComments("");
     setShowComments(false);
   };
 
   const renderActionButtons = () => {
+    if (!userRole) return null;
+
     switch (userRole) {
       case 'manager':
       case 'admin':
@@ -147,9 +153,9 @@ export const WorkflowSection = ({
             <div className="flex gap-4">
               <Button 
                 variant="default" 
-                onClick={() => {
+                onClick={async () => {
                   if (comments.trim()) {
-                    onStatusChange('rejected', comments);
+                    await onStatusChange('rejected', comments);
                     setComments("");
                     setShowComments(false);
                   }
