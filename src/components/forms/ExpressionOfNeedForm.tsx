@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { PartDetailsSection } from "./expression/PartDetailsSection";
 import { OrderDetailsSection } from "./expression/OrderDetailsSection";
 import { AdditionalInfoSection } from "./expression/AdditionalInfoSection";
+import { WorkflowSection } from "./expression/WorkflowSection";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Loader2 } from "lucide-react";
 
@@ -29,6 +30,9 @@ export const ExpressionOfNeedForm = () => {
     attachment_url: "",
     business_unit: departmentId || "carrieres",
     location: "conakry",
+    workflow_stage: "demande",
+    workflow_status: "pending",
+    current_department: "initiator"
   });
 
   const handleChange = (field: string, value: string | number) => {
@@ -53,22 +57,41 @@ export const ExpressionOfNeedForm = () => {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
+      // Insert the expression of need
+      const { data: expressionData, error: expressionError } = await supabase
         .from('expressions_of_need')
         .insert({
           ...formData,
           user_id: session.user.id,
           approval_status: 'submitted',
+        })
+        .select()
+        .single();
+
+      if (expressionError) throw expressionError;
+
+      // Create initial workflow history entry
+      const { error: historyError } = await supabase
+        .from('workflow_history')
+        .insert({
+          expression_id: expressionData.id,
+          previous_stage: 'initial',
+          new_stage: 'demande',
+          previous_status: 'initial',
+          new_status: 'pending',
+          previous_department: 'none',
+          new_department: 'initiator',
+          modified_by: session.user.id,
+          comments: 'Expression de besoin créée'
         });
 
-      if (error) throw error;
+      if (historyError) throw historyError;
 
       toast({
         title: "Succès",
         description: "Votre expression de besoin a été soumise avec succès!",
       });
 
-      // Navigate back to expressions list after successful submission
       navigate('/expressions');
     } catch (error: any) {
       console.error('Submission error:', error);
@@ -122,6 +145,11 @@ export const ExpressionOfNeedForm = () => {
           onChange={handleChange} 
         />
       </div>
+
+      <WorkflowSection 
+        formData={formData}
+        onChange={handleChange}
+      />
 
       <AdditionalInfoSection 
         formData={formData} 
