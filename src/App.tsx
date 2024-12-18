@@ -18,66 +18,14 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/auth" element={<Auth />} />
-          <Route
-            path="/"
-            element={
-              <RequireAuth>
-                <DashboardLayout>
-                  <Index />
-                </DashboardLayout>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/expressions"
-            element={
-              <RequireAuth>
-                <DashboardLayout>
-                  <ExpressionSubmissions />
-                </DashboardLayout>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/expressions/new"
-            element={
-              <RequireAuth>
-                <DashboardLayout>
-                  <NewExpression />
-                </DashboardLayout>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/requests"
-            element={
-              <RequireAuth>
-                <DashboardLayout>
-                  <ExpressionSubmissions />
-                </DashboardLayout>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/orders"
-            element={
-              <RequireAuth>
-                <DashboardLayout>
-                  <ExpressionSubmissions />
-                </DashboardLayout>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/reports"
-            element={
-              <RequireAuth>
-                <DashboardLayout>
-                  <ExpressionSubmissions />
-                </DashboardLayout>
-              </RequireAuth>
-            }
-          />
+          <Route element={<RequireAuth><DashboardLayout /></RequireAuth>}>
+            <Route path="/" element={<Index />} />
+            <Route path="/expressions" element={<ExpressionSubmissions />} />
+            <Route path="/expressions/new" element={<NewExpression />} />
+            <Route path="/requests" element={<ExpressionSubmissions />} />
+            <Route path="/orders" element={<ExpressionSubmissions />} />
+            <Route path="/reports" element={<ExpressionSubmissions />} />
+          </Route>
         </Routes>
       </AuthProvider>
     </QueryClientProvider>

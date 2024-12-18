@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { startOfToday, startOfWeek, startOfMonth, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { SubmissionsHeader } from "@/components/submissions/SubmissionsHeader";
 import { SubmissionTable } from "@/components/submissions/SubmissionTable";
 import { SubmissionPDFViewer } from "@/components/pdf/SubmissionPDFViewer";
@@ -91,55 +90,53 @@ const ExpressionSubmissions = () => {
   };
 
   return (
-    <DashboardLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
-        >
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-semibold text-gray-900">
-              {showForm ? "Nouvelle Demande d'Achat" : "Suivi des Soumissions"}
-            </h1>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-            >
-              {showForm ? "Voir les Soumissions" : "Nouvelle Demande"}
-            </button>
-          </div>
+    <div className="max-w-7xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
+      >
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-semibold text-gray-900">
+            {showForm ? "Nouvelle Demande d'Achat" : "Suivi des Soumissions"}
+          </h1>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+          >
+            {showForm ? "Voir les Soumissions" : "Nouvelle Demande"}
+          </button>
+        </div>
 
-          {showForm ? (
-            <ExpressionOfNeedForm />
-          ) : (
-            <>
-              <SubmissionsHeader 
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                statusFilter={statusFilter}
-                dateFilter={dateFilter}
-                setDateFilter={setDateFilter}
-                departmentFilter={departmentFilter}
-                setDepartmentFilter={setDepartmentFilter}
-                priorityFilter={priorityFilter}
-                setPriorityFilter={setPriorityFilter}
-                onClearFilters={clearFilters}
+        {showForm ? (
+          <ExpressionOfNeedForm />
+        ) : (
+          <>
+            <SubmissionsHeader 
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              statusFilter={statusFilter}
+              dateFilter={dateFilter}
+              setDateFilter={setDateFilter}
+              departmentFilter={departmentFilter}
+              setDepartmentFilter={setDepartmentFilter}
+              priorityFilter={priorityFilter}
+              setPriorityFilter={setPriorityFilter}
+              onClearFilters={clearFilters}
+            />
+
+            {isLoading ? (
+              <div className="text-center py-4">Chargement...</div>
+            ) : filteredSubmissions && (
+              <SubmissionTable 
+                submissions={filteredSubmissions}
+                onEdit={handleEdit}
+                onView={handleView}
               />
-
-              {isLoading ? (
-                <div className="text-center py-4">Chargement...</div>
-              ) : filteredSubmissions && (
-                <SubmissionTable 
-                  submissions={filteredSubmissions}
-                  onEdit={handleEdit}
-                  onView={handleView}
-                />
-              )}
-            </>
-          )}
-        </motion.div>
-      </div>
+            )}
+          </>
+        )}
+      </motion.div>
 
       {selectedSubmission && (
         <SubmissionPDFViewer
@@ -148,7 +145,7 @@ const ExpressionSubmissions = () => {
           submission={selectedSubmission}
         />
       )}
-    </DashboardLayout>
+    </div>
   );
 };
 
