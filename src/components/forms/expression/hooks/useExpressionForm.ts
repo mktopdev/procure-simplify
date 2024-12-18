@@ -35,14 +35,14 @@ export const useExpressionForm = () => {
     item_type: "",
     part_name: "",
     quantity: 1,
-    department: departmentId || "carrieres",
+    department: departmentId || "",
     priority: "",
     description: "",
     supplier: "",
     part_reference: "",
     additional_comments: "",
     attachment_url: "",
-    business_unit: departmentId || "carrieres",
+    business_unit: departmentId || "",
     location: "conakry",
     workflow_stage: "demande",
     workflow_status: "pending",
@@ -56,6 +56,34 @@ export const useExpressionForm = () => {
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleStatusChange = async (newStatus: string, comments?: string) => {
+    try {
+      const { error } = await supabase
+        .from('expressions_of_need')
+        .update({
+          workflow_status: newStatus,
+          ...(comments && { 
+            rejection_reason: newStatus === 'rejected' ? comments : null,
+            approval_comments: newStatus === 'approved' ? comments : null
+          })
+        })
+        .eq('id', formData.id);
+
+      if (error) throw error;
+
+      setFormData(prev => ({
+        ...prev,
+        workflow_status: newStatus,
+        ...(comments && {
+          rejection_reason: newStatus === 'rejected' ? comments : prev.rejection_reason,
+          approval_comments: newStatus === 'approved' ? comments : prev.approval_comments
+        })
+      }));
+    } catch (error: any) {
+      throw new Error(error.message || "Failed to update status");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,7 +106,9 @@ export const useExpressionForm = () => {
         .insert({
           ...formData,
           user_id: session.user.id,
-          approval_status: 'submitted',
+          workflow_stage: 'en_attente',
+          workflow_status: 'pending',
+          current_department: 'manager'
         })
         .select()
         .single();
@@ -89,14 +119,14 @@ export const useExpressionForm = () => {
         .from('workflow_history')
         .insert({
           expression_id: expressionData.id,
-          previous_stage: 'initial',
-          new_stage: 'demande',
-          previous_status: 'initial',
+          previous_stage: 'demande',
+          new_stage: 'en_attente',
+          previous_status: 'pending',
           new_status: 'pending',
-          previous_department: 'none',
-          new_department: 'initiator',
+          previous_department: 'initiator',
+          new_department: 'manager',
           modified_by: session.user.id,
-          comments: 'Expression de besoin créée'
+          comments: 'Expression de besoin soumise pour approbation'
         });
 
       if (historyError) throw historyError;
@@ -123,6 +153,7 @@ export const useExpressionForm = () => {
     formData,
     handleChange,
     handleSubmit,
+    handleStatusChange,
     isSubmitting,
     session
   };

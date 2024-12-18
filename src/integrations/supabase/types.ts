@@ -109,6 +109,7 @@ export type Database = {
           last_modified_by: string | null
           location: string
           logistics_status: string | null
+          next_allowed_statuses: string[] | null
           part_name: string
           part_reference: string | null
           payment_details: Json | null
@@ -117,9 +118,11 @@ export type Database = {
           quantity: number
           reception_status: string | null
           rejection_reason: string | null
+          requires_comment: boolean | null
           status: string | null
           status_progress: number | null
           supplier: string | null
+          transition_allowed_roles: string[] | null
           updated_at: string | null
           user_id: string | null
           view_count: number | null
@@ -149,6 +152,7 @@ export type Database = {
           last_modified_by?: string | null
           location: string
           logistics_status?: string | null
+          next_allowed_statuses?: string[] | null
           part_name: string
           part_reference?: string | null
           payment_details?: Json | null
@@ -157,9 +161,11 @@ export type Database = {
           quantity: number
           reception_status?: string | null
           rejection_reason?: string | null
+          requires_comment?: boolean | null
           status?: string | null
           status_progress?: number | null
           supplier?: string | null
+          transition_allowed_roles?: string[] | null
           updated_at?: string | null
           user_id?: string | null
           view_count?: number | null
@@ -189,6 +195,7 @@ export type Database = {
           last_modified_by?: string | null
           location?: string
           logistics_status?: string | null
+          next_allowed_statuses?: string[] | null
           part_name?: string
           part_reference?: string | null
           payment_details?: Json | null
@@ -197,9 +204,11 @@ export type Database = {
           quantity?: number
           reception_status?: string | null
           rejection_reason?: string | null
+          requires_comment?: boolean | null
           status?: string | null
           status_progress?: number | null
           supplier?: string | null
+          transition_allowed_roles?: string[] | null
           updated_at?: string | null
           user_id?: string | null
           view_count?: number | null
@@ -421,15 +430,68 @@ export type Database = {
           },
         ]
       }
+      workflow_transitions: {
+        Row: {
+          allowed_roles: string[]
+          created_at: string | null
+          current_stage: Database["public"]["Enums"]["workflow_stage_enum"]
+          current_status: Database["public"]["Enums"]["workflow_status_enum"]
+          id: string
+          next_stage: Database["public"]["Enums"]["workflow_stage_enum"]
+          next_status: Database["public"]["Enums"]["workflow_status_enum"]
+          requires_comment: boolean | null
+        }
+        Insert: {
+          allowed_roles: string[]
+          created_at?: string | null
+          current_stage: Database["public"]["Enums"]["workflow_stage_enum"]
+          current_status: Database["public"]["Enums"]["workflow_status_enum"]
+          id?: string
+          next_stage: Database["public"]["Enums"]["workflow_stage_enum"]
+          next_status: Database["public"]["Enums"]["workflow_status_enum"]
+          requires_comment?: boolean | null
+        }
+        Update: {
+          allowed_roles?: string[]
+          created_at?: string | null
+          current_stage?: Database["public"]["Enums"]["workflow_stage_enum"]
+          current_status?: Database["public"]["Enums"]["workflow_status_enum"]
+          id?: string
+          next_stage?: Database["public"]["Enums"]["workflow_stage_enum"]
+          next_status?: Database["public"]["Enums"]["workflow_status_enum"]
+          requires_comment?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      validate_workflow_transition: {
+        Args: {
+          p_expression_id: string
+          p_new_stage: Database["public"]["Enums"]["workflow_stage_enum"]
+          p_new_status: Database["public"]["Enums"]["workflow_status_enum"]
+          p_user_role: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      workflow_stage_enum:
+        | "demande"
+        | "en_attente"
+        | "approbation"
+        | "paiement"
+        | "livraison"
+        | "termine"
+      workflow_status_enum:
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "in_progress"
+        | "completed"
     }
     CompositeTypes: {
       [_ in never]: never

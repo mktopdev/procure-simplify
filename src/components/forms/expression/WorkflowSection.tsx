@@ -5,13 +5,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 
 interface WorkflowSectionProps {
   formData: {
@@ -19,108 +15,161 @@ interface WorkflowSectionProps {
     workflow_status: string;
     current_department: string;
   };
+  userRole: string;
   onChange: (field: string, value: string) => void;
+  onStatusChange: (newStatus: string, comments?: string) => void;
 }
 
-export const WorkflowSection = ({ formData, onChange }: WorkflowSectionProps) => {
-  const workflowStages = [
-    { value: "demande", label: "Demande" },
-    { value: "da", label: "Demande d'Achat" },
-    { value: "traitement", label: "Traitement Logistique" },
-    { value: "bc", label: "Bon de Commande" },
-    { value: "controle", label: "Contrôle de Gestion" },
-    { value: "comptabilite", label: "Comptabilité" },
-    { value: "paiement", label: "Paiement" },
-    { value: "livraison", label: "Livraison" },
-  ];
+export const WorkflowSection = ({ 
+  formData, 
+  userRole, 
+  onChange, 
+  onStatusChange 
+}: WorkflowSectionProps) => {
+  const [comments, setComments] = useState("");
+  const [showComments, setShowComments] = useState(false);
 
-  const departments = [
-    { value: "initiator", label: "Initiateur" },
-    { value: "logistics", label: "Logistique" },
-    { value: "finance", label: "Finance" },
-    { value: "management", label: "Direction" },
-  ];
+  const handleAction = (action: string) => {
+    if (action === 'reject') {
+      setShowComments(true);
+      return;
+    }
 
-  const statuses = [
-    { value: "pending", label: "En Attente" },
-    { value: "in_progress", label: "En Cours" },
-    { value: "completed", label: "Terminé" },
-    { value: "rejected", label: "Rejeté" },
-  ];
+    let newStatus = '';
+    switch (action) {
+      case 'approve':
+        newStatus = 'approved';
+        break;
+      case 'mark_paid':
+        newStatus = 'in_progress';
+        onChange('workflow_stage', 'paiement');
+        break;
+      case 'mark_shipped':
+        newStatus = 'in_progress';
+        onChange('workflow_stage', 'livraison');
+        break;
+      case 'mark_delivered':
+        newStatus = 'completed';
+        onChange('workflow_stage', 'termine');
+        break;
+      default:
+        return;
+    }
+
+    onStatusChange(newStatus, comments);
+    setComments("");
+    setShowComments(false);
+  };
+
+  const renderActionButtons = () => {
+    switch (userRole) {
+      case 'manager':
+      case 'admin':
+        if (formData.workflow_stage === 'en_attente' && formData.workflow_status === 'pending') {
+          return (
+            <div className="flex gap-4">
+              <Button 
+                variant="default" 
+                onClick={() => handleAction('approve')}
+              >
+                Approuver
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={() => handleAction('reject')}
+              >
+                Rejeter
+              </Button>
+            </div>
+          );
+        }
+        break;
+      case 'finance':
+        if (formData.workflow_stage === 'approbation' && formData.workflow_status === 'approved') {
+          return (
+            <Button 
+              variant="default" 
+              onClick={() => handleAction('mark_paid')}
+            >
+              Marquer comme Payé
+            </Button>
+          );
+        }
+        break;
+      case 'logistics':
+        if (formData.workflow_stage === 'paiement' && formData.workflow_status === 'in_progress') {
+          return (
+            <Button 
+              variant="default" 
+              onClick={() => handleAction('mark_shipped')}
+            >
+              Marquer comme Expédié
+            </Button>
+          );
+        } else if (formData.workflow_stage === 'livraison' && formData.workflow_status === 'in_progress') {
+          return (
+            <Button 
+              variant="default" 
+              onClick={() => handleAction('mark_delivered')}
+            >
+              Confirmer la Livraison
+            </Button>
+          );
+        }
+        break;
+    }
+    return null;
+  };
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Workflow</CardTitle>
         <CardDescription>
-          Informations sur l'état actuel de la demande dans le workflow
+          État actuel: {formData.workflow_stage} - {formData.workflow_status}
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <CardContent className="space-y-4">
+        {renderActionButtons()}
+        
+        {showComments && (
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Étape du Workflow
+              Commentaires de Rejet (Requis)
             </label>
-            <Select
-              value={formData.workflow_stage}
-              onValueChange={(value) => onChange("workflow_stage", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionnez l'étape" />
-              </SelectTrigger>
-              <SelectContent>
-                {workflowStages.map((stage) => (
-                  <SelectItem key={stage.value} value={stage.value}>
-                    {stage.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Textarea
+              value={comments}
+              onChange={(e) => setComments(e.target.value)}
+              className="min-h-[100px]"
+              placeholder="Veuillez expliquer la raison du rejet..."
+              required
+            />
+            <div className="flex gap-4">
+              <Button 
+                variant="default" 
+                onClick={() => {
+                  if (comments.trim()) {
+                    onStatusChange('rejected', comments);
+                    setComments("");
+                    setShowComments(false);
+                  }
+                }}
+                disabled={!comments.trim()}
+              >
+                Confirmer le Rejet
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setComments("");
+                  setShowComments(false);
+                }}
+              >
+                Annuler
+              </Button>
+            </div>
           </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Département Actuel
-            </label>
-            <Select
-              value={formData.current_department}
-              onValueChange={(value) => onChange("current_department", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionnez le département" />
-              </SelectTrigger>
-              <SelectContent>
-                {departments.map((dept) => (
-                  <SelectItem key={dept.value} value={dept.value}>
-                    {dept.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Statut
-            </label>
-            <Select
-              value={formData.workflow_status}
-              onValueChange={(value) => onChange("workflow_status", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionnez le statut" />
-              </SelectTrigger>
-              <SelectContent>
-                {statuses.map((status) => (
-                  <SelectItem key={status.value} value={status.value}>
-                    {status.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -10,10 +10,19 @@ import { WorkflowSection } from "./expression/WorkflowSection";
 import { WorkflowProgress } from "./expression/WorkflowProgress";
 import { useExpressionForm } from "./expression/hooks/useExpressionForm";
 import { getDepartmentName } from "./expression/utils/departmentUtils";
+import { useToast } from "@/hooks/use-toast";
 
 export const ExpressionOfNeedForm = () => {
   const { departmentId } = useParams();
-  const { formData, handleChange, handleSubmit, isSubmitting, session } = useExpressionForm();
+  const { toast } = useToast();
+  const { 
+    formData, 
+    handleChange, 
+    handleSubmit, 
+    handleStatusChange,
+    isSubmitting, 
+    session 
+  } = useExpressionForm();
 
   // Fetch user profile to determine role
   const { data: userProfile } = useQuery({
@@ -31,8 +40,21 @@ export const ExpressionOfNeedForm = () => {
     enabled: !!session?.user?.id
   });
 
-  const isAdmin = userProfile?.role === 'admin';
-  const isManager = userProfile?.role === 'manager';
+  const handleWorkflowStatusChange = async (newStatus: string, comments?: string) => {
+    try {
+      await handleStatusChange(newStatus, comments);
+      toast({
+        title: "Succès",
+        description: "Le statut a été mis à jour avec succès",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: error.message || "Une erreur est survenue lors de la mise à jour du statut",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <motion.form
@@ -52,31 +74,33 @@ export const ExpressionOfNeedForm = () => {
         <PartDetailsSection 
           formData={formData} 
           onChange={handleChange}
-          isReadOnly={!isAdmin && formData.workflow_status !== 'pending'}
+          isReadOnly={formData.workflow_status !== 'pending'}
         />
         <OrderDetailsSection 
           formData={formData} 
           onChange={handleChange}
-          isReadOnly={!isAdmin && formData.workflow_status !== 'pending'}
+          isReadOnly={formData.workflow_status !== 'pending'}
         />
       </div>
 
-      {(isAdmin || isManager) && (
+      {userProfile && (
         <WorkflowSection 
           formData={formData}
+          userRole={userProfile.role}
           onChange={handleChange}
+          onStatusChange={handleWorkflowStatusChange}
         />
       )}
 
       <AdditionalInfoSection 
         formData={formData} 
         onChange={handleChange}
-        isReadOnly={!isAdmin && formData.workflow_status !== 'pending'}
+        isReadOnly={formData.workflow_status !== 'pending'}
       />
 
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={isSubmitting || formData.workflow_status !== 'pending'}
         className="w-full rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
       >
         {isSubmitting ? (
