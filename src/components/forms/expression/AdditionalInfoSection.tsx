@@ -10,9 +10,10 @@ interface AdditionalInfoSectionProps {
     attachment_url: string;
   };
   onChange: (field: string, value: string) => void;
+  isReadOnly?: boolean;  // Added this prop
 }
 
-export const AdditionalInfoSection = ({ formData, onChange }: AdditionalInfoSectionProps) => {
+export const AdditionalInfoSection = ({ formData, onChange, isReadOnly = false }: AdditionalInfoSectionProps) => {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
 
@@ -64,8 +65,9 @@ export const AdditionalInfoSection = ({ formData, onChange }: AdditionalInfoSect
           value={formData.description}
           onChange={(e) => onChange('description', e.target.value)}
           rows={4}
-          className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
+          className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
           required
+          disabled={isReadOnly}
         />
       </div>
 
@@ -75,8 +77,9 @@ export const AdditionalInfoSection = ({ formData, onChange }: AdditionalInfoSect
           value={formData.additional_comments}
           onChange={(e) => onChange('additional_comments', e.target.value)}
           rows={3}
-          className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
+          className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
           placeholder="Informations complémentaires optionnelles"
+          disabled={isReadOnly}
         />
       </div>
 
@@ -94,7 +97,7 @@ export const AdditionalInfoSection = ({ formData, onChange }: AdditionalInfoSect
                   type="file"
                   className="sr-only"
                   onChange={handleFileUpload}
-                  disabled={isUploading}
+                  disabled={isUploading || isReadOnly}
                 />
               </label>
             </div>
