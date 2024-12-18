@@ -1,37 +1,46 @@
+import { Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
-import { AuthProvider } from "./components/auth/AuthProvider";
-import { RequireAuth } from "./components/auth/RequireAuth";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import ExpressionSubmissions from "./pages/ExpressionSubmissions";
-import NewExpression from "./pages/NewExpression";
+import { RequireAuth } from "@/components/auth/RequireAuth";
+import Auth from "@/pages/Auth";
+import Index from "@/pages/Index";
+import NewExpression from "@/pages/NewExpression";
+import ExpressionSubmissions from "@/pages/ExpressionSubmissions";
+import EditSubmission from "@/pages/EditSubmission";
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
-              <Route path="/expressions/submissions" element={<RequireAuth><ExpressionSubmissions /></RequireAuth>} />
-              <Route path="/expressions/new" element={<RequireAuth><NewExpression /></RequireAuth>} />
-            </Routes>
-          </AnimatePresence>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route
+          path="/expressions"
+          element={
+            <RequireAuth>
+              <ExpressionSubmissions />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/expressions/new"
+          element={
+            <RequireAuth>
+              <NewExpression />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/expressions/edit/:id"
+          element={
+            <RequireAuth>
+              <EditSubmission />
+            </RequireAuth>
+          }
+        />
+      </Routes>
+      <Toaster />
+    </>
+  );
+}
 
 export default App;
