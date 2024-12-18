@@ -10,7 +10,7 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen>
       <div className="flex min-h-screen w-full bg-gradient-to-br from-white via-white/60 to-[#276955]/40">
         <Sidebar />
         <div className="flex-1">
