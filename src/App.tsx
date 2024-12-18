@@ -9,6 +9,7 @@ import { RequireAuth } from "./components/auth/RequireAuth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ExpressionSubmissions from "./pages/ExpressionSubmissions";
+import NewExpression from "./pages/NewExpression";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
               <Route path="/expressions/submissions" element={<RequireAuth><ExpressionSubmissions /></RequireAuth>} />
+              <Route path="/expressions/new" element={<RequireAuth><NewExpression /></RequireAuth>} />
             </Routes>
           </AnimatePresence>
         </BrowserRouter>

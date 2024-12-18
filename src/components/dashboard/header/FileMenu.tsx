@@ -8,8 +8,8 @@ export const FileMenu = () => {
 
   const menuItems = [
     {
-      label: "Demande d'Achat",
-      path: "/expressions/submissions",
+      label: "Nouvelle Demande d'Achat",
+      path: "/expressions/new",
     },
     {
       label: "Suivi des Soumissions",
