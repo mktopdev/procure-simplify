@@ -8,7 +8,6 @@ import { AuthProvider } from "./components/auth/AuthProvider";
 import { RequireAuth } from "./components/auth/RequireAuth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import Expressions from "./components/dashboard/Expressions";
 import ExpressionSubmissions from "./pages/ExpressionSubmissions";
 
 const queryClient = new QueryClient();
@@ -24,8 +23,6 @@ const App = () => (
             <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
-              <Route path="/expressions" element={<RequireAuth><Expressions /></RequireAuth>} />
-              <Route path="/expressions/form/:departmentId" element={<RequireAuth><Expressions /></RequireAuth>} />
               <Route path="/expressions/submissions" element={<RequireAuth><ExpressionSubmissions /></RequireAuth>} />
             </Routes>
           </AnimatePresence>

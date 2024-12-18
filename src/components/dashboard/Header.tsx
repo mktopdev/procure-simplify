@@ -1,17 +1,10 @@
-import { Bell, Search, Menu, FileText, ShoppingCart, Package, BarChart, ChevronDown, Home, ClipboardList, LogOut } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { Search, LogOut, Home } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+import { FileMenu } from "./header/FileMenu";
+import { NotificationsDropdown } from "./header/NotificationsDropdown";
 
 interface Notification {
   id: string;
@@ -21,21 +14,11 @@ interface Notification {
 }
 
 export const Header = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { toast } = useToast();
 
-  const menuItems = [
-    { name: "Expression de Besoin", href: "/expressions", icon: FileText },
-    { name: "Demande d'Achat", href: "/requests", icon: ShoppingCart },
-    { name: "Bon de Commande", href: "/orders", icon: Package },
-    { name: "Rapport", href: "/reports", icon: BarChart },
-  ];
-
   useEffect(() => {
-    // Subscribe to real-time updates for expressions_of_need table
     const channel = supabase
       .channel('expressions-notifications')
       .on(
@@ -127,57 +110,7 @@ export const Header = () => {
           </div>
 
           <nav className="hidden md:flex space-x-8">
-            <div className="relative group">
-              <button
-                className="group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 hover:text-[#E16C31]"
-                onMouseEnter={() => setIsDropdownOpen(true)}
-                onMouseLeave={() => setIsDropdownOpen(false)}
-              >
-                Fichier
-                <ChevronDown className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:text-[#E16C31]" />
-              </button>
-              <AnimatePresence>
-                {isDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute left-0 w-56 mt-1 rounded-md shadow-lg bg-gradient-to-br from-[#276955] to-[#E16C31] overflow-hidden"
-                    onMouseEnter={() => setIsDropdownOpen(true)}
-                    onMouseLeave={() => setIsDropdownOpen(false)}
-                  >
-                    <div className="py-1">
-                      {menuItems.map((item) => {
-                        const isActive = location.pathname === item.href;
-                        return (
-                          <Link
-                            key={item.name}
-                            to={item.href}
-                            className={`flex items-center px-4 py-2 text-sm transition-colors duration-200 hover:bg-white/10 ${
-                              isActive ? "bg-white/20 text-white" : "text-white"
-                            }`}
-                          >
-                            <item.icon className="mr-2 h-4 w-4" />
-                            {item.name}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            <Link
-              to="/expressions/submissions"
-              className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 hover:text-[#E16C31] ${
-                location.pathname === '/expressions/submissions' ? 'text-[#E16C31]' : 'text-gray-700'
-              }`}
-            >
-              <ClipboardList className="mr-2 h-4 w-4" />
-              Suivi des Soumissions
-            </Link>
+            <FileMenu />
           </nav>
 
           <div className="flex items-center gap-4">
@@ -190,55 +123,11 @@ export const Header = () => {
               />
             </div>
             
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="relative rounded-full p-2 hover:bg-gray-100 transition-colors">
-                  <Bell className="h-5 w-5 text-gray-600" />
-                  {unreadCount > 0 && (
-                    <Badge 
-                      variant="destructive" 
-                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                    >
-                      {unreadCount}
-                    </Badge>
-                  )}
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <DropdownMenuGroup>
-                  <div className="flex items-center justify-between px-2 py-2 border-b">
-                    <span className="font-medium">Notifications</span>
-                    {unreadCount > 0 && (
-                      <button
-                        onClick={markAllAsRead}
-                        className="text-xs text-[#276955] hover:text-[#E16C31] transition-colors"
-                      >
-                        Marquer tout comme lu
-                      </button>
-                    )}
-                  </div>
-                  {notifications.length === 0 ? (
-                    <div className="px-2 py-4 text-sm text-gray-500 text-center">
-                      Aucune notification
-                    </div>
-                  ) : (
-                    notifications.map((notification) => (
-                      <DropdownMenuItem
-                        key={notification.id}
-                        className={`px-4 py-2 cursor-default ${!notification.isRead ? 'bg-muted/50' : ''}`}
-                      >
-                        <div className="flex flex-col gap-1">
-                          <p className="text-sm">{notification.message}</p>
-                          <span className="text-xs text-gray-500">
-                            {new Date(notification.created_at).toLocaleString()}
-                          </span>
-                        </div>
-                      </DropdownMenuItem>
-                    ))
-                  )}
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <NotificationsDropdown 
+              notifications={notifications}
+              unreadCount={unreadCount}
+              onMarkAllAsRead={markAllAsRead}
+            />
 
             <button
               onClick={handleLogout}
@@ -248,10 +137,6 @@ export const Header = () => {
               Déconnexion
             </button>
           </div>
-
-          <button className="md:hidden rounded-md bg-[#276955] p-2 text-white">
-            <Menu className="h-5 w-5" />
-          </button>
         </div>
       </div>
     </header>
