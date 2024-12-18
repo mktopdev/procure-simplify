@@ -23,6 +23,9 @@ export const ExpressionOfNeedForm = () => {
     part_reference: "",
     additional_comments: "",
     attachment_url: "",
+    // Add new required fields
+    business_unit: departmentId || "carrieres",
+    location: "conakry", // Default to conakry as per schema
   });
 
   const handleChange = (field: string, value: string | number) => {
@@ -49,7 +52,8 @@ export const ExpressionOfNeedForm = () => {
         .from('expressions_of_need')
         .insert({
           ...formData,
-          user_id: session.user.id
+          user_id: session.user.id,
+          approval_status: 'submitted', // Add default approval status
         });
 
       if (error) throw error;
