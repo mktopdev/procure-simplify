@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { EditSubmissionForm } from "@/components/submissions/EditSubmissionForm";
 import { AuditLogTable } from "@/components/submissions/AuditLogTable";
+import { PurchaseRequestItems } from "@/components/submissions/PurchaseRequestItems";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 
 const EditSubmission = () => {
@@ -111,6 +112,8 @@ const EditSubmission = () => {
             }}
           />
         )}
+
+        {id && <PurchaseRequestItems expressionId={id} />}
 
         {auditLogs && auditLogs.length > 0 && (
           <AuditLogTable auditLogs={auditLogs} />
