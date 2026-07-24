@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.5"
+  }
   public: {
     Tables: {
       approval_history: {
@@ -48,7 +53,7 @@ export type Database = {
         Row: {
           approver_role_id: string
           company_id: string
-          created_at: string | null
+          created_at: string
           entity_type: string
           id: string
           max_amount: number | null
@@ -59,7 +64,7 @@ export type Database = {
         Insert: {
           approver_role_id: string
           company_id?: string
-          created_at?: string | null
+          created_at?: string
           entity_type: string
           id?: string
           max_amount?: number | null
@@ -70,7 +75,7 @@ export type Database = {
         Update: {
           approver_role_id?: string
           company_id?: string
-          created_at?: string | null
+          created_at?: string
           entity_type?: string
           id?: string
           max_amount?: number | null
@@ -97,7 +102,7 @@ export type Database = {
       }
       audit_logs: {
         Row: {
-          changed_at: string | null
+          changed_at: string
           changed_by: string | null
           field_name: string
           id: string
@@ -107,7 +112,7 @@ export type Database = {
           table_name: string
         }
         Insert: {
-          changed_at?: string | null
+          changed_at?: string
           changed_by?: string | null
           field_name: string
           id?: string
@@ -117,7 +122,7 @@ export type Database = {
           table_name: string
         }
         Update: {
-          changed_at?: string | null
+          changed_at?: string
           changed_by?: string | null
           field_name?: string
           id?: string
@@ -127,6 +132,54 @@ export type Database = {
           table_name?: string
         }
         Relationships: []
+      }
+      bank_accounts: {
+        Row: {
+          account_number: string | null
+          bank_name: string
+          company_id: string
+          created_at: string
+          currency_code: string
+          current_balance: number
+          id: string
+          opening_balance: number
+        }
+        Insert: {
+          account_number?: string | null
+          bank_name: string
+          company_id?: string
+          created_at?: string
+          currency_code?: string
+          current_balance?: number
+          id?: string
+          opening_balance?: number
+        }
+        Update: {
+          account_number?: string | null
+          bank_name?: string
+          company_id?: string
+          created_at?: string
+          currency_code?: string
+          current_balance?: number
+          id?: string
+          opening_balance?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_accounts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bank_accounts_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       branches: {
         Row: {
@@ -162,920 +215,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "branches_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      companies: {
-        Row: {
-          code: string
-          created_at: string
-          default_currency: string
-          id: string
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          code: string
-          created_at?: string
-          default_currency?: string
-          id?: string
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          code?: string
-          created_at?: string
-          default_currency?: string
-          id?: string
-          name?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      cost_centers: {
-        Row: {
-          code: string
-          company_id: string
-          created_at: string | null
-          id: string
-          name: string
-        }
-        Insert: {
-          code: string
-          company_id?: string
-          created_at?: string | null
-          id?: string
-          name: string
-        }
-        Update: {
-          code?: string
-          company_id?: string
-          created_at?: string | null
-          id?: string
-          name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cost_centers_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      currencies: {
-        Row: {
-          code: string
-          name: string
-          symbol: string
-        }
-        Insert: {
-          code: string
-          name: string
-          symbol: string
-        }
-        Update: {
-          code?: string
-          name?: string
-          symbol?: string
-        }
-        Relationships: []
-      }
-      customers: {
-        Row: {
-          address: string | null
-          company_id: string
-          created_at: string | null
-          customer_type: string | null
-          email: string | null
-          id: string
-          name: string
-          phone: string | null
-          status: string
-          updated_at: string | null
-        }
-        Insert: {
-          address?: string | null
-          company_id?: string
-          created_at?: string | null
-          customer_type?: string | null
-          email?: string | null
-          id?: string
-          name: string
-          phone?: string | null
-          status?: string
-          updated_at?: string | null
-        }
-        Update: {
-          address?: string | null
-          company_id?: string
-          created_at?: string | null
-          customer_type?: string | null
-          email?: string | null
-          id?: string
-          name?: string
-          phone?: string | null
-          status?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "customers_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      documents: {
-        Row: {
-          file_name: string
-          file_size: number | null
-          file_type: string | null
-          file_url: string
-          id: string
-          owner_id: string
-          owner_type: string
-          uploaded_at: string | null
-          uploaded_by: string | null
-        }
-        Insert: {
-          file_name: string
-          file_size?: number | null
-          file_type?: string | null
-          file_url: string
-          id?: string
-          owner_id: string
-          owner_type: string
-          uploaded_at?: string | null
-          uploaded_by?: string | null
-        }
-        Update: {
-          file_name?: string
-          file_size?: number | null
-          file_type?: string | null
-          file_url?: string
-          id?: string
-          owner_id?: string
-          owner_type?: string
-          uploaded_at?: string | null
-          uploaded_by?: string | null
-        }
-        Relationships: []
-      }
-      domain_events: {
-        Row: {
-          company_id: string | null
-          created_at: string | null
-          created_by: string | null
-          entity_id: string
-          entity_type: string
-          event_type: string
-          id: string
-          payload: Json
-        }
-        Insert: {
-          company_id?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          entity_id: string
-          entity_type: string
-          event_type: string
-          id?: string
-          payload?: Json
-        }
-        Update: {
-          company_id?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          entity_id?: string
-          entity_type?: string
-          event_type?: string
-          id?: string
-          payload?: Json
-        }
-        Relationships: [
-          {
-            foreignKeyName: "domain_events_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      permissions: {
-        Row: {
-          description: string | null
-          id: string
-          key: string
-          module: string
-        }
-        Insert: {
-          description?: string | null
-          id?: string
-          key: string
-          module: string
-        }
-        Update: {
-          description?: string | null
-          id?: string
-          key?: string
-          module?: string
-        }
-        Relationships: []
-      }
-      role_permissions: {
-        Row: {
-          permission_id: string
-          role_id: string
-        }
-        Insert: {
-          permission_id: string
-          role_id: string
-        }
-        Update: {
-          permission_id?: string
-          role_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "role_permissions_permission_id_fkey"
-            columns: ["permission_id"]
-            isOneToOne: false
-            referencedRelation: "permissions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "role_permissions_role_id_fkey"
-            columns: ["role_id"]
-            isOneToOne: false
-            referencedRelation: "roles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      roles: {
-        Row: {
-          company_id: string
-          created_at: string | null
-          description: string | null
-          id: string
-          key: string
-          name: string
-        }
-        Insert: {
-          company_id?: string
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          key: string
-          name: string
-        }
-        Update: {
-          company_id?: string
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          key?: string
-          name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "roles_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      purchase_request_items: {
-        Row: {
-          category: string | null
-          created_at: string
-          description: string
-          estimated_unit_price: number | null
-          expression_id: string
-          id: string
-          quantity: number
-          required_date: string | null
-          unit: string | null
-          warehouse: string | null
-        }
-        Insert: {
-          category?: string | null
-          created_at?: string
-          description: string
-          estimated_unit_price?: number | null
-          expression_id: string
-          id?: string
-          quantity?: number
-          required_date?: string | null
-          unit?: string | null
-          warehouse?: string | null
-        }
-        Update: {
-          category?: string | null
-          created_at?: string
-          description?: string
-          estimated_unit_price?: number | null
-          expression_id?: string
-          id?: string
-          quantity?: number
-          required_date?: string | null
-          unit?: string | null
-          warehouse?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "purchase_request_items_expression_id_fkey"
-            columns: ["expression_id"]
-            isOneToOne: false
-            referencedRelation: "expressions_of_need"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      rfqs: {
-        Row: {
-          closing_date: string | null
-          company_id: string
-          created_at: string
-          created_by: string | null
-          evaluation_criteria: string | null
-          expression_id: string | null
-          id: string
-          rfq_number: string | null
-          status: string
-          submission_deadline: string | null
-          technical_specifications: string | null
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          closing_date?: string | null
-          company_id?: string
-          created_at?: string
-          created_by?: string | null
-          evaluation_criteria?: string | null
-          expression_id?: string | null
-          id?: string
-          rfq_number?: string | null
-          status?: string
-          submission_deadline?: string | null
-          technical_specifications?: string | null
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          closing_date?: string | null
-          company_id?: string
-          created_at?: string
-          created_by?: string | null
-          evaluation_criteria?: string | null
-          expression_id?: string | null
-          id?: string
-          rfq_number?: string | null
-          status?: string
-          submission_deadline?: string | null
-          technical_specifications?: string | null
-          title?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "rfqs_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "rfqs_expression_id_fkey"
-            columns: ["expression_id"]
-            isOneToOne: false
-            referencedRelation: "expressions_of_need"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      rfq_suppliers: {
-        Row: {
-          id: string
-          invited_at: string
-          rfq_id: string
-          status: string
-          supplier_id: string
-        }
-        Insert: {
-          id?: string
-          invited_at?: string
-          rfq_id: string
-          status?: string
-          supplier_id: string
-        }
-        Update: {
-          id?: string
-          invited_at?: string
-          rfq_id?: string
-          status?: string
-          supplier_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "rfq_suppliers_rfq_id_fkey"
-            columns: ["rfq_id"]
-            isOneToOne: false
-            referencedRelation: "rfqs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "rfq_suppliers_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "suppliers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      rfq_responses: {
-        Row: {
-          currency_code: string | null
-          delivery_time_days: number | null
-          id: string
-          is_selected: boolean
-          notes: string | null
-          quoted_price: number | null
-          rfq_id: string
-          submitted_at: string
-          supplier_id: string
-        }
-        Insert: {
-          currency_code?: string | null
-          delivery_time_days?: number | null
-          id?: string
-          is_selected?: boolean
-          notes?: string | null
-          quoted_price?: number | null
-          rfq_id: string
-          submitted_at?: string
-          supplier_id: string
-        }
-        Update: {
-          currency_code?: string | null
-          delivery_time_days?: number | null
-          id?: string
-          is_selected?: boolean
-          notes?: string | null
-          quoted_price?: number | null
-          rfq_id?: string
-          submitted_at?: string
-          supplier_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "rfq_responses_currency_code_fkey"
-            columns: ["currency_code"]
-            isOneToOne: false
-            referencedRelation: "currencies"
-            referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "rfq_responses_rfq_id_fkey"
-            columns: ["rfq_id"]
-            isOneToOne: false
-            referencedRelation: "rfqs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "rfq_responses_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "suppliers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      purchase_orders: {
-        Row: {
-          approved_at: string | null
-          approved_by: string | null
-          company_id: string
-          cost_center_id: string | null
-          created_at: string
-          created_by: string | null
-          currency_code: string
-          delivery_address: string | null
-          expected_delivery: string | null
-          expression_id: string | null
-          id: string
-          notes: string | null
-          payment_terms: string | null
-          po_number: string | null
-          rfq_id: string | null
-          status: string
-          supplier_id: string
-          updated_at: string
-        }
-        Insert: {
-          approved_at?: string | null
-          approved_by?: string | null
-          company_id?: string
-          cost_center_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          currency_code?: string
-          delivery_address?: string | null
-          expected_delivery?: string | null
-          expression_id?: string | null
-          id?: string
-          notes?: string | null
-          payment_terms?: string | null
-          po_number?: string | null
-          rfq_id?: string | null
-          status?: string
-          supplier_id: string
-          updated_at?: string
-        }
-        Update: {
-          approved_at?: string | null
-          approved_by?: string | null
-          company_id?: string
-          cost_center_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          currency_code?: string
-          delivery_address?: string | null
-          expected_delivery?: string | null
-          expression_id?: string | null
-          id?: string
-          notes?: string | null
-          payment_terms?: string | null
-          po_number?: string | null
-          rfq_id?: string | null
-          status?: string
-          supplier_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "purchase_orders_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "purchase_orders_cost_center_id_fkey"
-            columns: ["cost_center_id"]
-            isOneToOne: false
-            referencedRelation: "cost_centers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "purchase_orders_expression_id_fkey"
-            columns: ["expression_id"]
-            isOneToOne: false
-            referencedRelation: "expressions_of_need"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "purchase_orders_rfq_id_fkey"
-            columns: ["rfq_id"]
-            isOneToOne: false
-            referencedRelation: "rfqs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "purchase_orders_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "suppliers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      purchase_order_items: {
-        Row: {
-          created_at: string
-          description: string
-          id: string
-          line_total: number
-          purchase_order_id: string
-          purchase_request_item_id: string | null
-          quantity: number
-          tax_rate: number
-          unit: string | null
-          unit_price: number
-        }
-        Insert: {
-          created_at?: string
-          description: string
-          id?: string
-          line_total?: number
-          purchase_order_id: string
-          purchase_request_item_id?: string | null
-          quantity?: number
-          tax_rate?: number
-          unit?: string | null
-          unit_price?: number
-        }
-        Update: {
-          created_at?: string
-          description?: string
-          id?: string
-          line_total?: number
-          purchase_order_id?: string
-          purchase_request_item_id?: string | null
-          quantity?: number
-          tax_rate?: number
-          unit?: string | null
-          unit_price?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "purchase_order_items_purchase_order_id_fkey"
-            columns: ["purchase_order_id"]
-            isOneToOne: false
-            referencedRelation: "purchase_orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "purchase_order_items_purchase_request_item_id_fkey"
-            columns: ["purchase_request_item_id"]
-            isOneToOne: false
-            referencedRelation: "purchase_request_items"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      goods_receipts: {
-        Row: {
-          company_id: string
-          created_at: string
-          grn_number: string | null
-          id: string
-          notes: string | null
-          purchase_order_id: string
-          received_at: string
-          received_by: string | null
-          status: string
-        }
-        Insert: {
-          company_id?: string
-          created_at?: string
-          grn_number?: string | null
-          id?: string
-          notes?: string | null
-          purchase_order_id: string
-          received_at?: string
-          received_by?: string | null
-          status?: string
-        }
-        Update: {
-          company_id?: string
-          created_at?: string
-          grn_number?: string | null
-          id?: string
-          notes?: string | null
-          purchase_order_id?: string
-          received_at?: string
-          received_by?: string | null
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "goods_receipts_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "goods_receipts_purchase_order_id_fkey"
-            columns: ["purchase_order_id"]
-            isOneToOne: false
-            referencedRelation: "purchase_orders"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      goods_receipt_items: {
-        Row: {
-          condition: string
-          goods_receipt_id: string
-          id: string
-          notes: string | null
-          purchase_order_item_id: string
-          quantity_received: number
-        }
-        Insert: {
-          condition?: string
-          goods_receipt_id: string
-          id?: string
-          notes?: string | null
-          purchase_order_item_id: string
-          quantity_received: number
-        }
-        Update: {
-          condition?: string
-          goods_receipt_id?: string
-          id?: string
-          notes?: string | null
-          purchase_order_item_id?: string
-          quantity_received?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "goods_receipt_items_goods_receipt_id_fkey"
-            columns: ["goods_receipt_id"]
-            isOneToOne: false
-            referencedRelation: "goods_receipts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "goods_receipt_items_purchase_order_item_id_fkey"
-            columns: ["purchase_order_item_id"]
-            isOneToOne: false
-            referencedRelation: "purchase_order_items"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      job_ledger_entries: {
-        Row: {
-          amount: number
-          category: string
-          company_id: string
-          cost_center_id: string | null
-          created_at: string
-          created_by: string | null
-          currency_code: string
-          description: string | null
-          entity_id: string
-          entity_type: string
-          entry_type: string
-          id: string
-        }
-        Insert: {
-          amount: number
-          category: string
-          company_id?: string
-          cost_center_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          currency_code?: string
-          description?: string | null
-          entity_id: string
-          entity_type: string
-          entry_type: string
-          id?: string
-        }
-        Update: {
-          amount?: number
-          category?: string
-          company_id?: string
-          cost_center_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          currency_code?: string
-          description?: string | null
-          entity_id?: string
-          entity_type?: string
-          entry_type?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "job_ledger_entries_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "job_ledger_entries_cost_center_id_fkey"
-            columns: ["cost_center_id"]
-            isOneToOne: false
-            referencedRelation: "cost_centers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      supplier_invoices: {
-        Row: {
-          approved_at: string | null
-          approved_by: string | null
-          company_id: string
-          created_at: string
-          created_by: string | null
-          currency_code: string
-          due_date: string | null
-          id: string
-          internal_reference: string | null
-          invoice_date: string
-          invoice_number: string
-          notes: string | null
-          purchase_order_id: string | null
-          status: string
-          subtotal: number
-          supplier_id: string
-          tax_amount: number
-          total_amount: number
-          updated_at: string
-        }
-        Insert: {
-          approved_at?: string | null
-          approved_by?: string | null
-          company_id?: string
-          created_at?: string
-          created_by?: string | null
-          currency_code?: string
-          due_date?: string | null
-          id?: string
-          internal_reference?: string | null
-          invoice_date?: string
-          invoice_number: string
-          notes?: string | null
-          purchase_order_id?: string | null
-          status?: string
-          subtotal?: number
-          supplier_id: string
-          tax_amount?: number
-          total_amount?: number
-          updated_at?: string
-        }
-        Update: {
-          approved_at?: string | null
-          approved_by?: string | null
-          company_id?: string
-          created_at?: string
-          created_by?: string | null
-          currency_code?: string
-          due_date?: string | null
-          id?: string
-          internal_reference?: string | null
-          invoice_date?: string
-          invoice_number?: string
-          notes?: string | null
-          purchase_order_id?: string | null
-          status?: string
-          subtotal?: number
-          supplier_id?: string
-          tax_amount?: number
-          total_amount?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "supplier_invoices_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "supplier_invoices_purchase_order_id_fkey"
-            columns: ["purchase_order_id"]
-            isOneToOne: false
-            referencedRelation: "purchase_orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "supplier_invoices_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "suppliers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      expense_categories: {
-        Row: {
-          company_id: string
-          id: string
-          name: string
-        }
-        Insert: {
-          company_id?: string
-          id?: string
-          name: string
-        }
-        Update: {
-          company_id?: string
-          id?: string
-          name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "expense_categories_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
@@ -1128,40 +267,58 @@ export type Database = {
           },
         ]
       }
-      bank_accounts: {
+      companies: {
         Row: {
-          account_number: string | null
-          bank_name: string
-          company_id: string
+          code: string
           created_at: string
-          currency_code: string
-          current_balance: number
+          default_currency: string
           id: string
-          opening_balance: number
+          name: string
+          updated_at: string
         }
         Insert: {
-          account_number?: string | null
-          bank_name: string
-          company_id?: string
+          code: string
           created_at?: string
-          currency_code?: string
-          current_balance?: number
+          default_currency?: string
           id?: string
-          opening_balance?: number
+          name: string
+          updated_at?: string
         }
         Update: {
-          account_number?: string | null
-          bank_name?: string
+          code?: string
+          created_at?: string
+          default_currency?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cost_centers: {
+        Row: {
+          code: string
+          company_id: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          code: string
           company_id?: string
           created_at?: string
-          currency_code?: string
-          current_balance?: number
           id?: string
-          opening_balance?: number
+          name: string
+        }
+        Update: {
+          code?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          name?: string
         }
         Relationships: [
           {
-            foreignKeyName: "bank_accounts_company_id_fkey"
+            foreignKeyName: "cost_centers_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
@@ -1169,110 +326,141 @@ export type Database = {
           },
         ]
       }
-      payments: {
+      currencies: {
         Row: {
-          amount: number
-          bank_account_id: string | null
+          code: string
+          name: string
+          symbol: string
+        }
+        Insert: {
+          code: string
+          name: string
+          symbol: string
+        }
+        Update: {
+          code?: string
+          name?: string
+          symbol?: string
+        }
+        Relationships: []
+      }
+      customers: {
+        Row: {
+          address: string | null
           company_id: string
+          created_at: string
+          customer_type: string | null
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          company_id?: string
+          created_at?: string
+          customer_type?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          company_id?: string
+          created_at?: string
+          customer_type?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          owner_id: string
+          owner_type: string
+          uploaded_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          owner_id: string
+          owner_type: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          owner_id?: string
+          owner_type?: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      domain_events: {
+        Row: {
+          company_id: string | null
           created_at: string
           created_by: string | null
-          currency_code: string
+          entity_id: string
+          entity_type: string
+          event_type: string
           id: string
-          payment_date: string
-          reference: string | null
-          status: string
-          supplier_invoice_id: string
+          payload: Json
         }
         Insert: {
-          amount: number
-          bank_account_id?: string | null
-          company_id?: string
+          company_id?: string | null
           created_at?: string
           created_by?: string | null
-          currency_code?: string
+          entity_id: string
+          entity_type: string
+          event_type: string
           id?: string
-          payment_date?: string
-          reference?: string | null
-          status?: string
-          supplier_invoice_id: string
+          payload?: Json
         }
         Update: {
-          amount?: number
-          bank_account_id?: string | null
-          company_id?: string
+          company_id?: string | null
           created_at?: string
           created_by?: string | null
-          currency_code?: string
+          entity_id?: string
+          entity_type?: string
+          event_type?: string
           id?: string
-          payment_date?: string
-          reference?: string | null
-          status?: string
-          supplier_invoice_id?: string
+          payload?: Json
         }
         Relationships: [
           {
-            foreignKeyName: "payments_bank_account_id_fkey"
-            columns: ["bank_account_id"]
-            isOneToOne: false
-            referencedRelation: "bank_accounts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payments_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payments_supplier_invoice_id_fkey"
-            columns: ["supplier_invoice_id"]
-            isOneToOne: false
-            referencedRelation: "supplier_invoices"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      vehicles: {
-        Row: {
-          capacity_tons: number | null
-          company_id: string
-          created_at: string
-          current_lat: number | null
-          current_lng: number | null
-          id: string
-          location_updated_at: string | null
-          plate_number: string
-          status: string
-          vehicle_type: string | null
-        }
-        Insert: {
-          capacity_tons?: number | null
-          company_id?: string
-          created_at?: string
-          current_lat?: number | null
-          current_lng?: number | null
-          id?: string
-          location_updated_at?: string | null
-          plate_number: string
-          status?: string
-          vehicle_type?: string | null
-        }
-        Update: {
-          capacity_tons?: number | null
-          company_id?: string
-          created_at?: string
-          current_lat?: number | null
-          current_lng?: number | null
-          id?: string
-          location_updated_at?: string | null
-          plate_number?: string
-          status?: string
-          vehicle_type?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "vehicles_company_id_fkey"
+            foreignKeyName: "domain_events_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
@@ -1324,363 +512,28 @@ export type Database = {
           },
         ]
       }
-      transport_orders: {
+      expense_categories: {
         Row: {
-          cargo_description: string | null
           company_id: string
-          created_at: string
-          created_by: string | null
-          customer_id: string | null
-          delivery_address: string | null
           id: string
-          order_number: string | null
-          pickup_location: string | null
-          priority: string
-          purchase_order_id: string | null
-          status: string
-          target_delivery_date: string | null
-          updated_at: string
-          weight: number | null
+          name: string
         }
         Insert: {
-          cargo_description?: string | null
           company_id?: string
-          created_at?: string
-          created_by?: string | null
-          customer_id?: string | null
-          delivery_address?: string | null
           id?: string
-          order_number?: string | null
-          pickup_location?: string | null
-          priority?: string
-          purchase_order_id?: string | null
-          status?: string
-          target_delivery_date?: string | null
-          updated_at?: string
-          weight?: number | null
+          name: string
         }
         Update: {
-          cargo_description?: string | null
           company_id?: string
-          created_at?: string
-          created_by?: string | null
-          customer_id?: string | null
-          delivery_address?: string | null
           id?: string
-          order_number?: string | null
-          pickup_location?: string | null
-          priority?: string
-          purchase_order_id?: string | null
-          status?: string
-          target_delivery_date?: string | null
-          updated_at?: string
-          weight?: number | null
+          name?: string
         }
         Relationships: [
           {
-            foreignKeyName: "transport_orders_company_id_fkey"
+            foreignKeyName: "expense_categories_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transport_orders_customer_id_fkey"
-            columns: ["customer_id"]
-            isOneToOne: false
-            referencedRelation: "customers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transport_orders_purchase_order_id_fkey"
-            columns: ["purchase_order_id"]
-            isOneToOne: false
-            referencedRelation: "purchase_orders"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      trips: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          delivered_at: string | null
-          driver_id: string
-          id: string
-          pod_notes: string | null
-          started_at: string | null
-          status: string
-          transport_order_id: string
-          vehicle_id: string
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          delivered_at?: string | null
-          driver_id: string
-          id?: string
-          pod_notes?: string | null
-          started_at?: string | null
-          status?: string
-          transport_order_id: string
-          vehicle_id: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          delivered_at?: string | null
-          driver_id?: string
-          id?: string
-          pod_notes?: string | null
-          started_at?: string | null
-          status?: string
-          transport_order_id?: string
-          vehicle_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "trips_driver_id_fkey"
-            columns: ["driver_id"]
-            isOneToOne: false
-            referencedRelation: "drivers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "trips_transport_order_id_fkey"
-            columns: ["transport_order_id"]
-            isOneToOne: false
-            referencedRelation: "transport_orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "trips_vehicle_id_fkey"
-            columns: ["vehicle_id"]
-            isOneToOne: false
-            referencedRelation: "vehicles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      trip_expenses: {
-        Row: {
-          amount: number
-          category: string
-          created_at: string
-          created_by: string | null
-          currency_code: string
-          description: string | null
-          id: string
-          trip_id: string
-        }
-        Insert: {
-          amount: number
-          category: string
-          created_at?: string
-          created_by?: string | null
-          currency_code?: string
-          description?: string | null
-          id?: string
-          trip_id: string
-        }
-        Update: {
-          amount?: number
-          category?: string
-          created_at?: string
-          created_by?: string | null
-          currency_code?: string
-          description?: string | null
-          id?: string
-          trip_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "trip_expenses_trip_id_fkey"
-            columns: ["trip_id"]
-            isOneToOne: false
-            referencedRelation: "trips"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      suppliers: {
-        Row: {
-          address: string | null
-          category: string | null
-          city: string | null
-          company_id: string
-          country: string | null
-          created_at: string
-          created_by: string | null
-          email: string | null
-          id: string
-          name: string
-          notes: string | null
-          payment_terms: string | null
-          phone: string | null
-          risk_rating: string
-          status: string
-          tax_number: string | null
-          trading_name: string | null
-          updated_at: string
-        }
-        Insert: {
-          address?: string | null
-          category?: string | null
-          city?: string | null
-          company_id?: string
-          country?: string | null
-          created_at?: string
-          created_by?: string | null
-          email?: string | null
-          id?: string
-          name: string
-          notes?: string | null
-          payment_terms?: string | null
-          phone?: string | null
-          risk_rating?: string
-          status?: string
-          tax_number?: string | null
-          trading_name?: string | null
-          updated_at?: string
-        }
-        Update: {
-          address?: string | null
-          category?: string | null
-          city?: string | null
-          company_id?: string
-          country?: string | null
-          created_at?: string
-          created_by?: string | null
-          email?: string | null
-          id?: string
-          name?: string
-          notes?: string | null
-          payment_terms?: string | null
-          phone?: string | null
-          risk_rating?: string
-          status?: string
-          tax_number?: string | null
-          trading_name?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "suppliers_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      supplier_contacts: {
-        Row: {
-          created_at: string
-          email: string | null
-          id: string
-          is_primary: boolean
-          job_title: string | null
-          name: string
-          phone: string | null
-          supplier_id: string
-        }
-        Insert: {
-          created_at?: string
-          email?: string | null
-          id?: string
-          is_primary?: boolean
-          job_title?: string | null
-          name: string
-          phone?: string | null
-          supplier_id: string
-        }
-        Update: {
-          created_at?: string
-          email?: string | null
-          id?: string
-          is_primary?: boolean
-          job_title?: string | null
-          name?: string
-          phone?: string | null
-          supplier_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "supplier_contacts_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "suppliers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      supplier_bank_accounts: {
-        Row: {
-          account_number: string | null
-          bank_name: string
-          created_at: string
-          currency_code: string | null
-          iban: string | null
-          id: string
-          supplier_id: string
-        }
-        Insert: {
-          account_number?: string | null
-          bank_name: string
-          created_at?: string
-          currency_code?: string | null
-          iban?: string | null
-          id?: string
-          supplier_id: string
-        }
-        Update: {
-          account_number?: string | null
-          bank_name?: string
-          created_at?: string
-          currency_code?: string | null
-          iban?: string | null
-          id?: string
-          supplier_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "supplier_bank_accounts_currency_code_fkey"
-            columns: ["currency_code"]
-            isOneToOne: false
-            referencedRelation: "currencies"
-            referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "supplier_bank_accounts_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "suppliers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_roles: {
-        Row: {
-          assigned_at: string | null
-          role_id: string
-          user_id: string
-        }
-        Insert: {
-          assigned_at?: string | null
-          role_id: string
-          user_id: string
-        }
-        Update: {
-          assigned_at?: string | null
-          role_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_roles_role_id_fkey"
-            columns: ["role_id"]
-            isOneToOne: false
-            referencedRelation: "roles"
             referencedColumns: ["id"]
           },
         ]
@@ -1804,7 +657,7 @@ export type Database = {
           payment_details?: Json | null
           payment_status?: string | null
           priority: string
-          quantity: number
+          quantity?: number
           reception_status?: string | null
           rejection_reason?: string | null
           requires_comment?: boolean | null
@@ -1867,17 +720,17 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_category"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "item_categories"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "expressions_of_need_branch_id_fkey"
             columns: ["branch_id"]
             isOneToOne: false
             referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expressions_of_need_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "item_categories"
             referencedColumns: ["id"]
           },
           {
@@ -1892,6 +745,113 @@ export type Database = {
             columns: ["supplier_id"]
             isOneToOne: false
             referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goods_receipt_items: {
+        Row: {
+          condition: string
+          goods_receipt_id: string
+          id: string
+          notes: string | null
+          purchase_order_item_id: string
+          quantity_received: number
+        }
+        Insert: {
+          condition?: string
+          goods_receipt_id: string
+          id?: string
+          notes?: string | null
+          purchase_order_item_id: string
+          quantity_received: number
+        }
+        Update: {
+          condition?: string
+          goods_receipt_id?: string
+          id?: string
+          notes?: string | null
+          purchase_order_item_id?: string
+          quantity_received?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goods_receipt_items_goods_receipt_id_fkey"
+            columns: ["goods_receipt_id"]
+            isOneToOne: false
+            referencedRelation: "goods_receipts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goods_receipt_items_purchase_order_item_id_fkey"
+            columns: ["purchase_order_item_id"]
+            isOneToOne: false
+            referencedRelation: "po_receipt_status"
+            referencedColumns: ["purchase_order_item_id"]
+          },
+          {
+            foreignKeyName: "goods_receipt_items_purchase_order_item_id_fkey"
+            columns: ["purchase_order_item_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goods_receipts: {
+        Row: {
+          company_id: string
+          created_at: string
+          grn_number: string | null
+          id: string
+          notes: string | null
+          purchase_order_id: string
+          received_at: string
+          received_by: string | null
+          status: string
+        }
+        Insert: {
+          company_id?: string
+          created_at?: string
+          grn_number?: string | null
+          id?: string
+          notes?: string | null
+          purchase_order_id: string
+          received_at?: string
+          received_by?: string | null
+          status?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          grn_number?: string | null
+          id?: string
+          notes?: string | null
+          purchase_order_id?: string
+          received_at?: string
+          received_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goods_receipts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goods_receipts_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "po_financial_summary"
+            referencedColumns: ["purchase_order_id"]
+          },
+          {
+            foreignKeyName: "goods_receipts_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
             referencedColumns: ["id"]
           },
         ]
@@ -1938,6 +898,73 @@ export type Database = {
         }
         Relationships: []
       }
+      job_ledger_entries: {
+        Row: {
+          amount: number
+          category: string
+          company_id: string
+          cost_center_id: string | null
+          created_at: string
+          created_by: string | null
+          currency_code: string
+          description: string | null
+          entity_id: string
+          entity_type: string
+          entry_type: string
+          id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          company_id?: string
+          cost_center_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          description?: string | null
+          entity_id: string
+          entity_type: string
+          entry_type: string
+          id?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          company_id?: string
+          cost_center_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          description?: string | null
+          entity_id?: string
+          entity_type?: string
+          entry_type?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_ledger_entries_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_ledger_entries_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_ledger_entries_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       notification_logs: {
         Row: {
           created_at: string | null
@@ -1975,6 +1002,98 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          bank_account_id: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          currency_code: string
+          id: string
+          payment_date: string
+          reference: string | null
+          status: string
+          supplier_invoice_id: string
+        }
+        Insert: {
+          amount: number
+          bank_account_id?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          id?: string
+          payment_date?: string
+          reference?: string | null
+          status?: string
+          supplier_invoice_id: string
+        }
+        Update: {
+          amount?: number
+          bank_account_id?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          id?: string
+          payment_date?: string
+          reference?: string | null
+          status?: string
+          supplier_invoice_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_bank_account_id_fkey"
+            columns: ["bank_account_id"]
+            isOneToOne: false
+            referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "payments_supplier_invoice_id_fkey"
+            columns: ["supplier_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      permissions: {
+        Row: {
+          description: string | null
+          id: string
+          key: string
+          module: string
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          key: string
+          module: string
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          key?: string
+          module?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -2027,6 +1146,445 @@ export type Database = {
           },
         ]
       }
+      purchase_order_items: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          line_total: number | null
+          purchase_order_id: string
+          purchase_request_item_id: string | null
+          quantity: number
+          tax_rate: number
+          unit: string | null
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          line_total?: number | null
+          purchase_order_id: string
+          purchase_request_item_id?: string | null
+          quantity?: number
+          tax_rate?: number
+          unit?: string | null
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          line_total?: number | null
+          purchase_order_id?: string
+          purchase_request_item_id?: string | null
+          quantity?: number
+          tax_rate?: number
+          unit?: string | null
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_order_items_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "po_financial_summary"
+            referencedColumns: ["purchase_order_id"]
+          },
+          {
+            foreignKeyName: "purchase_order_items_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_order_items_purchase_request_item_id_fkey"
+            columns: ["purchase_request_item_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_request_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_orders: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          company_id: string
+          cost_center_id: string | null
+          created_at: string
+          created_by: string | null
+          currency_code: string
+          delivery_address: string | null
+          expected_delivery: string | null
+          expression_id: string | null
+          id: string
+          notes: string | null
+          payment_terms: string | null
+          po_number: string | null
+          rfq_id: string | null
+          status: string
+          supplier_id: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          cost_center_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          delivery_address?: string | null
+          expected_delivery?: string | null
+          expression_id?: string | null
+          id?: string
+          notes?: string | null
+          payment_terms?: string | null
+          po_number?: string | null
+          rfq_id?: string | null
+          status?: string
+          supplier_id: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          cost_center_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          delivery_address?: string | null
+          expected_delivery?: string | null
+          expression_id?: string | null
+          id?: string
+          notes?: string | null
+          payment_terms?: string | null
+          po_number?: string | null
+          rfq_id?: string | null
+          status?: string
+          supplier_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_orders_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_orders_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_orders_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "purchase_orders_expression_id_fkey"
+            columns: ["expression_id"]
+            isOneToOne: false
+            referencedRelation: "expressions_of_need"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_orders_rfq_id_fkey"
+            columns: ["rfq_id"]
+            isOneToOne: false
+            referencedRelation: "rfqs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_request_items: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string
+          estimated_unit_price: number | null
+          expression_id: string
+          id: string
+          quantity: number
+          required_date: string | null
+          unit: string | null
+          warehouse: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description: string
+          estimated_unit_price?: number | null
+          expression_id: string
+          id?: string
+          quantity?: number
+          required_date?: string | null
+          unit?: string | null
+          warehouse?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string
+          estimated_unit_price?: number | null
+          expression_id?: string
+          id?: string
+          quantity?: number
+          required_date?: string | null
+          unit?: string | null
+          warehouse?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_request_items_expression_id_fkey"
+            columns: ["expression_id"]
+            isOneToOne: false
+            referencedRelation: "expressions_of_need"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rfq_responses: {
+        Row: {
+          currency_code: string | null
+          delivery_time_days: number | null
+          id: string
+          is_selected: boolean
+          notes: string | null
+          quoted_price: number | null
+          rfq_id: string
+          submitted_at: string
+          supplier_id: string
+        }
+        Insert: {
+          currency_code?: string | null
+          delivery_time_days?: number | null
+          id?: string
+          is_selected?: boolean
+          notes?: string | null
+          quoted_price?: number | null
+          rfq_id: string
+          submitted_at?: string
+          supplier_id: string
+        }
+        Update: {
+          currency_code?: string | null
+          delivery_time_days?: number | null
+          id?: string
+          is_selected?: boolean
+          notes?: string | null
+          quoted_price?: number | null
+          rfq_id?: string
+          submitted_at?: string
+          supplier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rfq_responses_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "rfq_responses_rfq_id_fkey"
+            columns: ["rfq_id"]
+            isOneToOne: false
+            referencedRelation: "rfqs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rfq_responses_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rfq_suppliers: {
+        Row: {
+          id: string
+          invited_at: string
+          rfq_id: string
+          status: string
+          supplier_id: string
+        }
+        Insert: {
+          id?: string
+          invited_at?: string
+          rfq_id: string
+          status?: string
+          supplier_id: string
+        }
+        Update: {
+          id?: string
+          invited_at?: string
+          rfq_id?: string
+          status?: string
+          supplier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rfq_suppliers_rfq_id_fkey"
+            columns: ["rfq_id"]
+            isOneToOne: false
+            referencedRelation: "rfqs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rfq_suppliers_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rfqs: {
+        Row: {
+          closing_date: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          evaluation_criteria: string | null
+          expression_id: string | null
+          id: string
+          rfq_number: string | null
+          status: string
+          submission_deadline: string | null
+          technical_specifications: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          closing_date?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          evaluation_criteria?: string | null
+          expression_id?: string | null
+          id?: string
+          rfq_number?: string | null
+          status?: string
+          submission_deadline?: string | null
+          technical_specifications?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          closing_date?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          evaluation_criteria?: string | null
+          expression_id?: string | null
+          id?: string
+          rfq_number?: string | null
+          status?: string
+          submission_deadline?: string | null
+          technical_specifications?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rfqs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rfqs_expression_id_fkey"
+            columns: ["expression_id"]
+            isOneToOne: false
+            referencedRelation: "expressions_of_need"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      role_permissions: {
+        Row: {
+          permission_id: string
+          role_id: string
+        }
+        Insert: {
+          permission_id: string
+          role_id: string
+        }
+        Update: {
+          permission_id?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_permission_id_fkey"
+            columns: ["permission_id"]
+            isOneToOne: false
+            referencedRelation: "permissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "role_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          company_id: string
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          name: string
+        }
+        Insert: {
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          name: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       submission_audit_logs: {
         Row: {
           created_at: string | null
@@ -2057,17 +1615,534 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_submission"
+            foreignKeyName: "submission_audit_logs_submission_id_fkey"
             columns: ["submission_id"]
             isOneToOne: false
             referencedRelation: "expressions_of_need"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      supplier_bank_accounts: {
+        Row: {
+          account_number: string | null
+          bank_name: string
+          created_at: string
+          currency_code: string | null
+          iban: string | null
+          id: string
+          supplier_id: string
+        }
+        Insert: {
+          account_number?: string | null
+          bank_name: string
+          created_at?: string
+          currency_code?: string | null
+          iban?: string | null
+          id?: string
+          supplier_id: string
+        }
+        Update: {
+          account_number?: string | null
+          bank_name?: string
+          created_at?: string
+          currency_code?: string | null
+          iban?: string | null
+          id?: string
+          supplier_id?: string
+        }
+        Relationships: [
           {
-            foreignKeyName: "submission_audit_logs_submission_id_fkey"
-            columns: ["submission_id"]
+            foreignKeyName: "supplier_bank_accounts_currency_code_fkey"
+            columns: ["currency_code"]
             isOneToOne: false
-            referencedRelation: "expressions_of_need"
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "supplier_bank_accounts_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      supplier_contacts: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          is_primary: boolean
+          job_title: string | null
+          name: string
+          phone: string | null
+          supplier_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_primary?: boolean
+          job_title?: string | null
+          name: string
+          phone?: string | null
+          supplier_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_primary?: boolean
+          job_title?: string | null
+          name?: string
+          phone?: string | null
+          supplier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_contacts_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      supplier_invoices: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          currency_code: string
+          due_date: string | null
+          id: string
+          internal_reference: string | null
+          invoice_date: string
+          invoice_number: string
+          notes: string | null
+          purchase_order_id: string | null
+          status: string
+          subtotal: number
+          supplier_id: string
+          tax_amount: number
+          total_amount: number | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          due_date?: string | null
+          id?: string
+          internal_reference?: string | null
+          invoice_date?: string
+          invoice_number: string
+          notes?: string | null
+          purchase_order_id?: string | null
+          status?: string
+          subtotal?: number
+          supplier_id: string
+          tax_amount?: number
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          due_date?: string | null
+          id?: string
+          internal_reference?: string | null
+          invoice_date?: string
+          invoice_number?: string
+          notes?: string | null
+          purchase_order_id?: string | null
+          status?: string
+          subtotal?: number
+          supplier_id?: string
+          tax_amount?: number
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_invoices_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_invoices_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "supplier_invoices_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "po_financial_summary"
+            referencedColumns: ["purchase_order_id"]
+          },
+          {
+            foreignKeyName: "supplier_invoices_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_invoices_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suppliers: {
+        Row: {
+          address: string | null
+          category: string | null
+          city: string | null
+          company_id: string
+          country: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          payment_terms: string | null
+          phone: string | null
+          risk_rating: string
+          status: string
+          tax_number: string | null
+          trading_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          category?: string | null
+          city?: string | null
+          company_id?: string
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          payment_terms?: string | null
+          phone?: string | null
+          risk_rating?: string
+          status?: string
+          tax_number?: string | null
+          trading_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          category?: string | null
+          city?: string | null
+          company_id?: string
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          payment_terms?: string | null
+          phone?: string | null
+          risk_rating?: string
+          status?: string
+          tax_number?: string | null
+          trading_name?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suppliers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transport_orders: {
+        Row: {
+          cargo_description: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          delivery_address: string | null
+          id: string
+          order_number: string | null
+          pickup_location: string | null
+          priority: string
+          purchase_order_id: string | null
+          status: string
+          target_delivery_date: string | null
+          updated_at: string
+          weight: number | null
+        }
+        Insert: {
+          cargo_description?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          delivery_address?: string | null
+          id?: string
+          order_number?: string | null
+          pickup_location?: string | null
+          priority?: string
+          purchase_order_id?: string | null
+          status?: string
+          target_delivery_date?: string | null
+          updated_at?: string
+          weight?: number | null
+        }
+        Update: {
+          cargo_description?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          delivery_address?: string | null
+          id?: string
+          order_number?: string | null
+          pickup_location?: string | null
+          priority?: string
+          purchase_order_id?: string | null
+          status?: string
+          target_delivery_date?: string | null
+          updated_at?: string
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transport_orders_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transport_orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transport_orders_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "po_financial_summary"
+            referencedColumns: ["purchase_order_id"]
+          },
+          {
+            foreignKeyName: "transport_orders_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          created_by: string | null
+          currency_code: string
+          description: string | null
+          id: string
+          trip_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          description?: string | null
+          id?: string
+          trip_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          description?: string | null
+          id?: string
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_expenses_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "trip_expenses_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trips: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          delivered_at: string | null
+          driver_id: string
+          id: string
+          pod_notes: string | null
+          started_at: string | null
+          status: string
+          transport_order_id: string
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string | null
+          driver_id: string
+          id?: string
+          pod_notes?: string | null
+          started_at?: string | null
+          status?: string
+          transport_order_id: string
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string | null
+          driver_id?: string
+          id?: string
+          pod_notes?: string | null
+          started_at?: string | null
+          status?: string
+          transport_order_id?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trips_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trips_transport_order_id_fkey"
+            columns: ["transport_order_id"]
+            isOneToOne: false
+            referencedRelation: "transport_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trips_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          assigned_at: string
+          role_id: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          role_id: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          role_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicles: {
+        Row: {
+          capacity_tons: number | null
+          company_id: string
+          created_at: string
+          current_lat: number | null
+          current_lng: number | null
+          id: string
+          location_updated_at: string | null
+          plate_number: string
+          status: string
+          vehicle_type: string | null
+        }
+        Insert: {
+          capacity_tons?: number | null
+          company_id?: string
+          created_at?: string
+          current_lat?: number | null
+          current_lng?: number | null
+          id?: string
+          location_updated_at?: string | null
+          plate_number: string
+          status?: string
+          vehicle_type?: string | null
+        }
+        Update: {
+          capacity_tons?: number | null
+          company_id?: string
+          created_at?: string
+          current_lat?: number | null
+          current_lng?: number | null
+          id?: string
+          location_updated_at?: string | null
+          plate_number?: string
+          status?: string
+          vehicle_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
@@ -2157,24 +2232,30 @@ export type Database = {
       }
     }
     Views: {
-      po_financial_summary: {
-        Row: {
-          invoiced_total: number
-          ordered_total: number
-          po_number: string | null
-          purchase_order_id: string
-          received_value: number
-        }
-        Relationships: []
-      }
       budget_actuals: {
         Row: {
-          actual_amount: number
-          budget_amount: number
-          budget_id: string
+          actual_amount: number | null
+          budget_amount: number | null
+          budget_id: string | null
           category: string | null
-          cost_center_id: string
-          period: string
+          cost_center_id: string | null
+          period: string | null
+        }
+        Insert: {
+          actual_amount?: never
+          budget_amount?: number | null
+          budget_id?: string | null
+          category?: string | null
+          cost_center_id?: string | null
+          period?: string | null
+        }
+        Update: {
+          actual_amount?: never
+          budget_amount?: number | null
+          budget_id?: string | null
+          category?: string | null
+          cost_center_id?: string | null
+          period?: string | null
         }
         Relationships: [
           {
@@ -2186,16 +2267,33 @@ export type Database = {
           },
         ]
       }
+      po_financial_summary: {
+        Row: {
+          invoiced_total: number | null
+          ordered_total: number | null
+          po_number: string | null
+          purchase_order_id: string | null
+          received_value: number | null
+        }
+        Relationships: []
+      }
       po_receipt_status: {
         Row: {
-          description: string
-          purchase_order_id: string
-          purchase_order_item_id: string
-          quantity_ordered: number
-          quantity_outstanding: number
-          quantity_received: number
+          description: string | null
+          purchase_order_id: string | null
+          purchase_order_item_id: string | null
+          quantity_ordered: number | null
+          quantity_outstanding: number | null
+          quantity_received: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "purchase_order_items_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "po_financial_summary"
+            referencedColumns: ["purchase_order_id"]
+          },
           {
             foreignKeyName: "purchase_order_items_purchase_order_id_fkey"
             columns: ["purchase_order_id"]
@@ -2207,6 +2305,21 @@ export type Database = {
       }
     }
     Functions: {
+      emit_domain_event: {
+        Args: {
+          p_company_id?: string
+          p_created_by?: string
+          p_entity_id: string
+          p_entity_type: string
+          p_event_type: string
+          p_payload?: Json
+        }
+        Returns: string
+      }
+      has_permission: {
+        Args: { p_permission_key: string; p_user_id: string }
+        Returns: boolean
+      }
       validate_workflow_transition: {
         Args: {
           p_expression_id: string
@@ -2215,24 +2328,6 @@ export type Database = {
           p_user_role: string
         }
         Returns: boolean
-      }
-      has_permission: {
-        Args: {
-          p_user_id: string
-          p_permission_key: string
-        }
-        Returns: boolean
-      }
-      emit_domain_event: {
-        Args: {
-          p_event_type: string
-          p_entity_type: string
-          p_entity_id: string
-          p_payload?: Json
-          p_company_id?: string
-          p_created_by?: string
-        }
-        Returns: string
       }
     }
     Enums: {
@@ -2256,27 +2351,33 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
-  PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -2284,20 +2385,24 @@ export type Tables<
     : never
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -2305,20 +2410,24 @@ export type TablesInsert<
     : never
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -2326,29 +2435,57 @@ export type TablesUpdate<
     : never
 
 export type Enums<
-  PublicEnumNameOrOptions extends
-    | keyof PublicSchema["Enums"]
-    | { schema: keyof Database },
-  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
-    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      workflow_stage_enum: [
+        "demande",
+        "en_attente",
+        "approbation",
+        "paiement",
+        "livraison",
+        "termine",
+      ],
+      workflow_status_enum: [
+        "pending",
+        "approved",
+        "rejected",
+        "in_progress",
+        "completed",
+      ],
+    },
+  },
+} as const

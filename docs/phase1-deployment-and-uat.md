@@ -1,6 +1,7 @@
 # Phase 1 Deployment & UAT Guide — Transxpress ERP Foundation
 
-Status: **implemented, not yet applied to the live Supabase project** (`smsffnbfcpybezaljgmd`).
+Status: **deployed** to `smsffnbfcpybezaljgmd` (all 7 migrations applied via the Supabase MCP connection, security advisor re-run clean of the two real findings it caught, `src/integrations/supabase/types.ts` regenerated from the live schema). No users have signed up yet, so role assignment (§5) is still outstanding — everything else in this document reflects the actual deployed state, not a plan.
+
 This document is the deployment + validation runbook before Fleet/Warehouse/HR/Customer Portal/AI work begins.
 
 ---
@@ -14,7 +15,10 @@ supabase/migrations/20260724121000_supplier_management.sql
 supabase/migrations/20260724122000_procurement.sql
 supabase/migrations/20260724123000_finance_job_costing.sql
 supabase/migrations/20260724124000_transportation.sql
+supabase/migrations/20260724130000_security_hardening.sql
 ```
+
+**Deployment method used**: once a Supabase MCP connector became available mid-session, all 7 migrations were applied directly via `apply_migration` rather than the CLI/SQL-editor instructions below — those instructions are kept for future deployments (e.g. a production project) where an MCP connection isn't set up. `20260724130000_security_hardening.sql` was added after the Supabase security advisor (`get_advisors`) flagged two real, non-cosmetic issues post-deploy — see §2 addendum below.
 
 **Update**: a sixth migration (`20260724110000_base_app_schema.sql`) was added after discovering the target Supabase project (`smsffnbfcpybezaljgmd`, created fresh for this deployment) had none of the original pre-Phase-1 tables (`profiles`, `expressions_of_need`, etc.) — those were never part of a checked-in migration; they lived only in a different, now-inaccessible Supabase project. `base_app_schema.sql` **reconstructs them from the last known TypeScript types**, since that's the only record of their structure that was ever available. Column names/types/relationships should be accurate; exact original default values, RLS policies, and the `validate_workflow_transition()` function body were never visible and are best-effort reconstructions — see the file's own header comment for specifics. This is why it's safe: this is a fresh project with no real data to conflict with a reconstruction.
 
@@ -43,6 +47,12 @@ All are nullable, defaulted, non-breaking. No existing column is altered, rename
 | 3 | RBAC backfill only covers 4 legacy roles | Only `profiles.role in ('admin','manager','finance','logistics')` get mapped to new roles; any other/default role value gets **zero** rows in `user_roles` | Those users lose no *existing* access (Expression of Need RLS untouched), but gain **no** access to Suppliers/Procurement/Finance/Transport until a role is assigned. See §5 "Post-migration role assignment" — **this blocks UAT** if not done first. |
 | 4 | No existing role maps to `procurement_officer`, `fleet_manager`, or `executive` | `procurement.manage` (create/edit suppliers, POs, RFQs, GRNs) is granted only to `procurement_officer` and `admin` | **Only a user whose `profiles.role = 'admin'` can manage Suppliers/Procurement immediately after migration.** Everyone else needs a manual role grant (§5). |
 | 5 | `on delete cascade` on new child tables | e.g. `purchase_request_items.expression_id → expressions_of_need(id) on delete cascade` | Only fires if an `expressions_of_need` row is hard-deleted, which the app never does (archive-only by design). Not a risk to existing behavior, just noting it exists. |
+
+**Addendum — post-deploy security advisor results**: running Supabase's `get_advisors` (security) after the initial 6 migrations found two real, non-cosmetic issues, fixed by migration 7 (`20260724130000_security_hardening.sql`):
+- **ERROR**: `po_receipt_status`, `po_financial_summary`, and `budget_actuals` ran as their owner by default, bypassing RLS on the underlying tables — anyone authenticated could query them directly and see all rows regardless of `procurement.view`/`finance.view`. Fixed with `security_invoker = true` on all three.
+- **WARN**: six simple trigger functions (`set_updated_at`, the four `*_number` generators, `generate_supplier_invoice_reference`) had no pinned `search_path`. Fixed.
+
+Everything else the advisor reported — the `using (true)` policies on `purchase_request_items`/`customers`/`cost_centers`/`expressions_of_need`/etc., and public-bucket listing on `erp-documents`/`expressions-attachments` — matches the findings already disclosed above and was left as-is intentionally.
 
 **No policy blocks existing users from anything they could already do.** RLS was only added to brand-new tables; no policy was added or changed on `expressions_of_need`, `expression_attachments`, `approval_history`, `workflow_history`, `workflow_transitions`, `item_categories`, `item_types`, `notification_logs`, `profiles`, or `submission_audit_logs`.
 
@@ -73,7 +83,7 @@ Practical implication: use `supabase db push` (via CLI, §4), which tracks appli
 | Cron jobs | None required. `domain_events` is an append-only audit/outbox table with **no consumer** — nothing currently reads it (no Edge Function, no cron). This is intentional for Phase 1 (all side effects happen synchronously in the client); it's ready for a future Edge Function to consume | No action needed for Phase 1 to function |
 | Edge Functions | None created, none required — all Phase 1 flows are direct table writes plus two RPC calls (`has_permission`, `emit_domain_event`) | No action needed |
 | External APIs | None integrated (GPS providers, WhatsApp, email, etc. are explicitly deferred) | No action needed |
-| Type regeneration | `src/integrations/supabase/types.ts` was **hand-written** to match the migrations (no CLI access in the build environment) | Recommended: regenerate after deploy to catch any drift (§5, step 4) |
+| Type regeneration | Done. `src/integrations/supabase/types.ts` was regenerated from the live schema via the Supabase MCP's `generate_typescript_types` and matched the hand-written version closely enough that `npm run build`/`tsc --noEmit` both pass with zero changes needed elsewhere | No action needed |
 
 ---
 
