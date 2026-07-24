@@ -1,6 +1,6 @@
 # Phase 1 Deployment & UAT Guide — Transxpress ERP Foundation
 
-Status: **implemented, not yet applied to the live Supabase project** (`sdprrmzpdmbhtwseszpm`).
+Status: **implemented, not yet applied to the live Supabase project** (`smsffnbfcpybezaljgmd`).
 This document is the deployment + validation runbook before Fleet/Warehouse/HR/Customer Portal/AI work begins.
 
 ---
@@ -74,14 +74,14 @@ Practical implication: use `supabase db push` (via CLI, §4), which tracks appli
 
 ---
 
-## 5. Deployment checklist — `sdprrmzpdmbhtwseszpm`
+## 5. Deployment checklist — `smsffnbfcpybezaljgmd`
 
 ### Step 1 — Pre-flight
 
-- [ ] Confirm you're applying against the intended project: `sdprrmzpdmbhtwseszpm`.
+- [ ] Confirm you're applying against the intended project: `smsffnbfcpybezaljgmd`.
 - [ ] Confirm current DB state: this project has **dev/test data only** (per your earlier confirmation) — no additional backup is strictly required, but taking one costs nothing:
   ```bash
-  supabase db dump --project-ref sdprrmzpdmbhtwseszpm -f pre-phase1-backup.sql
+  supabase db dump --project-ref smsffnbfcpybezaljgmd -f pre-phase1-backup.sql
   ```
 - [ ] Pull the latest branch locally: `git fetch origin claude/project-context-4kby1s && git checkout claude/project-context-4kby1s && git pull`
 
@@ -89,7 +89,7 @@ Practical implication: use `supabase db push` (via CLI, §4), which tracks appli
 
 **Option A — Supabase CLI (recommended, tracks applied state):**
 ```bash
-supabase link --project-ref sdprrmzpdmbhtwseszpm
+supabase link --project-ref smsffnbfcpybezaljgmd
 supabase db push
 ```
 
@@ -118,7 +118,7 @@ Expect one row, `public = true`.
 ### Step 4 — Regenerate types (recommended)
 
 ```bash
-supabase gen types typescript --project-id sdprrmzpdmbhtwseszpm > src/integrations/supabase/types.ts
+supabase gen types typescript --project-id smsffnbfcpybezaljgmd > src/integrations/supabase/types.ts
 npm run build
 ```
 This replaces the hand-written types with the real generated ones — if there's any drift between what I wrote and what actually landed, the build will now fail loudly instead of silently mismatching at runtime. If it fails, that's a signal to reconcile before UAT, not a rollback trigger.
