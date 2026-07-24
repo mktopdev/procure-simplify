@@ -8,6 +8,7 @@ This document is the deployment + validation runbook before Fleet/Warehouse/HR/C
 ## 1. Migration order (must be applied in this exact sequence)
 
 ```
+supabase/migrations/20260724110000_base_app_schema.sql
 supabase/migrations/20260724120000_foundational_erp_schema.sql
 supabase/migrations/20260724121000_supplier_management.sql
 supabase/migrations/20260724122000_procurement.sql
@@ -15,7 +16,9 @@ supabase/migrations/20260724123000_finance_job_costing.sql
 supabase/migrations/20260724124000_transportation.sql
 ```
 
-The filenames are timestamp-prefixed and each depends on tables/functions created by the ones before it (e.g. `procurement.sql` references `suppliers`; `finance_job_costing.sql` references `purchase_orders` and `goods_receipt_items`; `transportation.sql` references `customers` and `purchase_orders`). `supabase db push` applies them in filename order automatically — do not reorder.
+**Update**: a sixth migration (`20260724110000_base_app_schema.sql`) was added after discovering the target Supabase project (`smsffnbfcpybezaljgmd`, created fresh for this deployment) had none of the original pre-Phase-1 tables (`profiles`, `expressions_of_need`, etc.) — those were never part of a checked-in migration; they lived only in a different, now-inaccessible Supabase project. `base_app_schema.sql` **reconstructs them from the last known TypeScript types**, since that's the only record of their structure that was ever available. Column names/types/relationships should be accurate; exact original default values, RLS policies, and the `validate_workflow_transition()` function body were never visible and are best-effort reconstructions — see the file's own header comment for specifics. This is why it's safe: this is a fresh project with no real data to conflict with a reconstruction.
+
+The filenames are timestamp-prefixed and each depends on tables/functions created by the ones before it (`foundational_erp_schema.sql` ALTERs tables created by `base_app_schema.sql`; `procurement.sql` references `suppliers`; `finance_job_costing.sql` references `purchase_orders` and `goods_receipt_items`; `transportation.sql` references `customers` and `purchase_orders`). `supabase db push` applies them in filename order automatically — do not reorder.
 
 ---
 
@@ -95,11 +98,12 @@ supabase db push
 
 **Option B — Manual (Supabase Dashboard → SQL Editor):**
 Paste and run each file's contents **in this exact order**, one at a time, waiting for success before the next:
-1. `20260724120000_foundational_erp_schema.sql`
-2. `20260724121000_supplier_management.sql`
-3. `20260724122000_procurement.sql`
-4. `20260724123000_finance_job_costing.sql`
-5. `20260724124000_transportation.sql`
+1. `20260724110000_base_app_schema.sql`
+2. `20260724120000_foundational_erp_schema.sql`
+3. `20260724121000_supplier_management.sql`
+4. `20260724122000_procurement.sql`
+5. `20260724123000_finance_job_costing.sql`
+6. `20260724124000_transportation.sql`
 
 ### Step 3 — Verify schema landed
 
@@ -108,7 +112,12 @@ select table_name from information_schema.tables
 where table_schema = 'public'
 order by table_name;
 ```
-Expect to see (new, beyond the pre-existing 10): `approval_rules, audit_logs, bank_accounts, branches, budgets, companies, cost_centers, currencies, customers, documents, domain_events, drivers, expense_categories, goods_receipt_items, goods_receipts, job_ledger_entries, payments, permissions, purchase_order_items, purchase_orders, purchase_request_items, rfq_responses, rfq_suppliers, rfqs, role_permissions, roles, supplier_bank_accounts, supplier_contacts, supplier_invoices, suppliers, transport_orders, trip_expenses, trips, user_roles, vehicles`.
+On a fresh project (no pre-existing 10 tables), expect **all** of: `approval_history, approval_rules, audit_logs, bank_accounts, branches, budgets, companies, cost_centers, currencies, customers, documents, domain_events, drivers, expense_categories, expression_attachments, expressions_of_need, goods_receipt_items, goods_receipts, item_categories, item_types, job_ledger_entries, notification_logs, payments, permissions, profiles, purchase_order_items, purchase_orders, purchase_request_items, rfq_responses, rfq_suppliers, rfqs, role_permissions, roles, submission_audit_logs, supplier_bank_accounts, supplier_contacts, supplier_invoices, suppliers, transport_orders, trip_expenses, trips, user_roles, vehicles, workflow_history, workflow_transitions`.
+
+```sql
+select id, public from storage.buckets where id = 'expressions-attachments';
+```
+Expect one row, `public = true` (created by the base schema migration).
 
 ```sql
 select id, public from storage.buckets where id = 'erp-documents';
