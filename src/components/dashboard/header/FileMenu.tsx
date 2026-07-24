@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { File, FileText, ShoppingCart, Package, BarChart } from "lucide-react";
+import { File, FileText, ShoppingCart, Package, BarChart, Truck } from "lucide-react";
 
 export const FileMenu = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -16,6 +16,11 @@ export const FileMenu = () => {
       label: "Purchase Requests",
       path: "/requests",
       icon: ShoppingCart,
+    },
+    {
+      label: "Suppliers",
+      path: "/suppliers",
+      icon: Truck,
     },
     {
       label: "Purchase Orders",

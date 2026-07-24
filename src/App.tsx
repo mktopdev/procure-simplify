@@ -9,6 +9,9 @@ import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
 import NewExpression from "@/pages/NewExpression";
 import ExpressionSubmissions from "@/pages/ExpressionSubmissions";
+import Suppliers from "@/pages/Suppliers";
+import NewSupplier from "@/pages/NewSupplier";
+import SupplierDetail from "@/pages/SupplierDetail";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +28,9 @@ function App() {
             <Route path="/requests" element={<ExpressionSubmissions />} />
             <Route path="/orders" element={<ExpressionSubmissions />} />
             <Route path="/reports" element={<ExpressionSubmissions />} />
+            <Route path="/suppliers" element={<Suppliers />} />
+            <Route path="/suppliers/new" element={<NewSupplier />} />
+            <Route path="/suppliers/:id" element={<SupplierDetail />} />
           </Route>
         </Routes>
       </AuthProvider>
