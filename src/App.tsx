@@ -23,6 +23,11 @@ import NewSupplierInvoice from "@/pages/NewSupplierInvoice";
 import SupplierInvoiceDetail from "@/pages/SupplierInvoiceDetail";
 import JobCosting from "@/pages/JobCosting";
 import Budgets from "@/pages/Budgets";
+import Fleet from "@/pages/Fleet";
+import TransportOrders from "@/pages/TransportOrders";
+import NewTransportOrder from "@/pages/NewTransportOrder";
+import TransportOrderDetail from "@/pages/TransportOrderDetail";
+import Dispatch from "@/pages/Dispatch";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +58,11 @@ function App() {
             <Route path="/finance/supplier-invoices/:id" element={<SupplierInvoiceDetail />} />
             <Route path="/finance/job-costing" element={<JobCosting />} />
             <Route path="/finance/budgets" element={<Budgets />} />
+            <Route path="/transport/fleet" element={<Fleet />} />
+            <Route path="/transport/orders" element={<TransportOrders />} />
+            <Route path="/transport/orders/new" element={<NewTransportOrder />} />
+            <Route path="/transport/orders/:id" element={<TransportOrderDetail />} />
+            <Route path="/transport/dispatch" element={<Dispatch />} />
           </Route>
         </Routes>
       </AuthProvider>

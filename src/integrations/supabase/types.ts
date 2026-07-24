@@ -1233,6 +1233,275 @@ export type Database = {
           },
         ]
       }
+      vehicles: {
+        Row: {
+          capacity_tons: number | null
+          company_id: string
+          created_at: string
+          current_lat: number | null
+          current_lng: number | null
+          id: string
+          location_updated_at: string | null
+          plate_number: string
+          status: string
+          vehicle_type: string | null
+        }
+        Insert: {
+          capacity_tons?: number | null
+          company_id?: string
+          created_at?: string
+          current_lat?: number | null
+          current_lng?: number | null
+          id?: string
+          location_updated_at?: string | null
+          plate_number: string
+          status?: string
+          vehicle_type?: string | null
+        }
+        Update: {
+          capacity_tons?: number | null
+          company_id?: string
+          created_at?: string
+          current_lat?: number | null
+          current_lng?: number | null
+          id?: string
+          location_updated_at?: string | null
+          plate_number?: string
+          status?: string
+          vehicle_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      drivers: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          license_expiry: string | null
+          license_number: string | null
+          name: string
+          phone: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          license_expiry?: string | null
+          license_number?: string | null
+          name: string
+          phone?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          license_expiry?: string | null
+          license_number?: string | null
+          name?: string
+          phone?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drivers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transport_orders: {
+        Row: {
+          cargo_description: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          delivery_address: string | null
+          id: string
+          order_number: string | null
+          pickup_location: string | null
+          priority: string
+          purchase_order_id: string | null
+          status: string
+          target_delivery_date: string | null
+          updated_at: string
+          weight: number | null
+        }
+        Insert: {
+          cargo_description?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          delivery_address?: string | null
+          id?: string
+          order_number?: string | null
+          pickup_location?: string | null
+          priority?: string
+          purchase_order_id?: string | null
+          status?: string
+          target_delivery_date?: string | null
+          updated_at?: string
+          weight?: number | null
+        }
+        Update: {
+          cargo_description?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          delivery_address?: string | null
+          id?: string
+          order_number?: string | null
+          pickup_location?: string | null
+          priority?: string
+          purchase_order_id?: string | null
+          status?: string
+          target_delivery_date?: string | null
+          updated_at?: string
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transport_orders_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transport_orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transport_orders_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trips: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          delivered_at: string | null
+          driver_id: string
+          id: string
+          pod_notes: string | null
+          started_at: string | null
+          status: string
+          transport_order_id: string
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string | null
+          driver_id: string
+          id?: string
+          pod_notes?: string | null
+          started_at?: string | null
+          status?: string
+          transport_order_id: string
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string | null
+          driver_id?: string
+          id?: string
+          pod_notes?: string | null
+          started_at?: string | null
+          status?: string
+          transport_order_id?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trips_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trips_transport_order_id_fkey"
+            columns: ["transport_order_id"]
+            isOneToOne: false
+            referencedRelation: "transport_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trips_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          created_by: string | null
+          currency_code: string
+          description: string | null
+          id: string
+          trip_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          description?: string | null
+          id?: string
+          trip_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          description?: string | null
+          id?: string
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_expenses_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppliers: {
         Row: {
           address: string | null
