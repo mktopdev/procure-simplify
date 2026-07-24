@@ -909,6 +909,330 @@ export type Database = {
           },
         ]
       }
+      job_ledger_entries: {
+        Row: {
+          amount: number
+          category: string
+          company_id: string
+          cost_center_id: string | null
+          created_at: string
+          created_by: string | null
+          currency_code: string
+          description: string | null
+          entity_id: string
+          entity_type: string
+          entry_type: string
+          id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          company_id?: string
+          cost_center_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          description?: string | null
+          entity_id: string
+          entity_type: string
+          entry_type: string
+          id?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          company_id?: string
+          cost_center_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          description?: string | null
+          entity_id?: string
+          entity_type?: string
+          entry_type?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_ledger_entries_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_ledger_entries_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      supplier_invoices: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          currency_code: string
+          due_date: string | null
+          id: string
+          internal_reference: string | null
+          invoice_date: string
+          invoice_number: string
+          notes: string | null
+          purchase_order_id: string | null
+          status: string
+          subtotal: number
+          supplier_id: string
+          tax_amount: number
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          due_date?: string | null
+          id?: string
+          internal_reference?: string | null
+          invoice_date?: string
+          invoice_number: string
+          notes?: string | null
+          purchase_order_id?: string | null
+          status?: string
+          subtotal?: number
+          supplier_id: string
+          tax_amount?: number
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          due_date?: string | null
+          id?: string
+          internal_reference?: string | null
+          invoice_date?: string
+          invoice_number?: string
+          notes?: string | null
+          purchase_order_id?: string | null
+          status?: string
+          subtotal?: number
+          supplier_id?: string
+          tax_amount?: number
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_invoices_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_invoices_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_invoices_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expense_categories: {
+        Row: {
+          company_id: string
+          id: string
+          name: string
+        }
+        Insert: {
+          company_id?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          company_id?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_categories_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      budgets: {
+        Row: {
+          budget_amount: number
+          category: string | null
+          company_id: string
+          cost_center_id: string
+          created_at: string
+          id: string
+          period: string
+        }
+        Insert: {
+          budget_amount: number
+          category?: string | null
+          company_id?: string
+          cost_center_id: string
+          created_at?: string
+          id?: string
+          period: string
+        }
+        Update: {
+          budget_amount?: number
+          category?: string | null
+          company_id?: string
+          cost_center_id?: string
+          created_at?: string
+          id?: string
+          period?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budgets_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budgets_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bank_accounts: {
+        Row: {
+          account_number: string | null
+          bank_name: string
+          company_id: string
+          created_at: string
+          currency_code: string
+          current_balance: number
+          id: string
+          opening_balance: number
+        }
+        Insert: {
+          account_number?: string | null
+          bank_name: string
+          company_id?: string
+          created_at?: string
+          currency_code?: string
+          current_balance?: number
+          id?: string
+          opening_balance?: number
+        }
+        Update: {
+          account_number?: string | null
+          bank_name?: string
+          company_id?: string
+          created_at?: string
+          currency_code?: string
+          current_balance?: number
+          id?: string
+          opening_balance?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_accounts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          bank_account_id: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          currency_code: string
+          id: string
+          payment_date: string
+          reference: string | null
+          status: string
+          supplier_invoice_id: string
+        }
+        Insert: {
+          amount: number
+          bank_account_id?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          id?: string
+          payment_date?: string
+          reference?: string | null
+          status?: string
+          supplier_invoice_id: string
+        }
+        Update: {
+          amount?: number
+          bank_account_id?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          id?: string
+          payment_date?: string
+          reference?: string | null
+          status?: string
+          supplier_invoice_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_bank_account_id_fkey"
+            columns: ["bank_account_id"]
+            isOneToOne: false
+            referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_supplier_invoice_id_fkey"
+            columns: ["supplier_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppliers: {
         Row: {
           address: string | null
@@ -1564,6 +1888,35 @@ export type Database = {
       }
     }
     Views: {
+      po_financial_summary: {
+        Row: {
+          invoiced_total: number
+          ordered_total: number
+          po_number: string | null
+          purchase_order_id: string
+          received_value: number
+        }
+        Relationships: []
+      }
+      budget_actuals: {
+        Row: {
+          actual_amount: number
+          budget_amount: number
+          budget_id: string
+          category: string | null
+          cost_center_id: string
+          period: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budgets_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       po_receipt_status: {
         Row: {
           description: string

@@ -18,6 +18,11 @@ import PurchaseOrderDetail from "@/pages/PurchaseOrderDetail";
 import RFQs from "@/pages/RFQs";
 import NewRFQ from "@/pages/NewRFQ";
 import RFQDetail from "@/pages/RFQDetail";
+import SupplierInvoices from "@/pages/SupplierInvoices";
+import NewSupplierInvoice from "@/pages/NewSupplierInvoice";
+import SupplierInvoiceDetail from "@/pages/SupplierInvoiceDetail";
+import JobCosting from "@/pages/JobCosting";
+import Budgets from "@/pages/Budgets";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +48,11 @@ function App() {
             <Route path="/procurement/rfqs" element={<RFQs />} />
             <Route path="/procurement/rfqs/new" element={<NewRFQ />} />
             <Route path="/procurement/rfqs/:id" element={<RFQDetail />} />
+            <Route path="/finance/supplier-invoices" element={<SupplierInvoices />} />
+            <Route path="/finance/supplier-invoices/new" element={<NewSupplierInvoice />} />
+            <Route path="/finance/supplier-invoices/:id" element={<SupplierInvoiceDetail />} />
+            <Route path="/finance/job-costing" element={<JobCosting />} />
+            <Route path="/finance/budgets" element={<Budgets />} />
           </Route>
         </Routes>
       </AuthProvider>

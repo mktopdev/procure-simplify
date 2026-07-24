@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { File, FileText, ShoppingCart, Package, BarChart, Truck, ClipboardList } from "lucide-react";
+import { File, FileText, ShoppingCart, Package, BarChart, Truck, ClipboardList, Receipt, Wallet } from "lucide-react";
 
 export const FileMenu = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -31,6 +31,21 @@ export const FileMenu = () => {
       label: "RFQs",
       path: "/procurement/rfqs",
       icon: ClipboardList,
+    },
+    {
+      label: "Supplier Invoices",
+      path: "/finance/supplier-invoices",
+      icon: Receipt,
+    },
+    {
+      label: "Job Costing",
+      path: "/finance/job-costing",
+      icon: Wallet,
+    },
+    {
+      label: "Budgets",
+      path: "/finance/budgets",
+      icon: BarChart,
     },
     {
       label: "Reports",
