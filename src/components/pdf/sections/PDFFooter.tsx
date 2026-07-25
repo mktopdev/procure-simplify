@@ -15,11 +15,9 @@ const styles = StyleSheet.create({
 export const PDFFooter = () => (
   <View style={styles.footer}>
     <Text>
-      Le présent document est la propriété de GUITER S.A. Toute reproduction
+      Le présent document est la propriété de TRANSXPRESS SARL. Toute reproduction
       ou distribution partielle ou totale sans accord préalable est interdite.
     </Text>
-    <Text style={{ marginTop: 5 }}>
-      GUITER S.A. - Direction du Transport et du Matériel
-    </Text>
+    <Text style={{ marginTop: 5 }}>TRANSXPRESS SARL</Text>
   </View>
 );

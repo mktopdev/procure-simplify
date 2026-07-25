@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Image } from "@react-pdf/renderer";
+import { Text, View, StyleSheet } from "@react-pdf/renderer";
 
 const styles = StyleSheet.create({
   header: {
@@ -7,11 +7,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     flexDirection: "row",
     alignItems: "center",
-  },
-  logoContainer: {
-    width: 180,
-    height: 120,
-    marginRight: 15,
   },
   textContainer: {
     flex: 1,
@@ -40,16 +35,8 @@ const styles = StyleSheet.create({
 export const PDFHeader = () => (
   <>
     <View style={styles.header}>
-      <View style={styles.logoContainer}>
-        <Image 
-          src="/lovable-uploads/52995933-69cf-4d4e-a3b0-1d5fea816533.png"
-        />
-      </View>
       <View style={styles.textContainer}>
-        <Text style={styles.companyName}>GUITER S.A.</Text>
-        <Text style={styles.department}>
-          Direction du Transport et du Matériel
-        </Text>
+        <Text style={styles.companyName}>TRANSXPRESS SARL</Text>
       </View>
     </View>
     <Text style={styles.documentTitle}>Demande d'Approvisionnement</Text>

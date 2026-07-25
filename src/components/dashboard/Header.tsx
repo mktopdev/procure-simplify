@@ -100,11 +100,7 @@ export const Header = () => {
               to="/"
               className="flex items-center gap-2 text-[#276955] hover:text-[#E16C31] transition-colors duration-200"
             >
-              <img 
-                src="/lovable-uploads/52995933-69cf-4d4e-a3b0-1d5fea816533.png" 
-                alt="Groupe Guiter" 
-                className="h-8"
-              />
+              <span className="text-lg font-bold">TRANSXPRESS</span>
               <Home className="h-5 w-5 ml-2" />
             </Link>
           </div>

@@ -29,11 +29,7 @@ const Auth = () => {
         className="w-full max-w-md bg-white rounded-xl shadow-xl p-8"
       >
         <div className="mb-8 text-center">
-          <img 
-            src="/lovable-uploads/52995933-69cf-4d4e-a3b0-1d5fea816533.png" 
-            alt="Groupe Guiter" 
-            className="h-12 mx-auto mb-4"
-          />
+          <div className="text-2xl font-bold text-[#276955] mb-4">TRANSXPRESS</div>
           <h2 className="text-2xl font-semibold text-gray-900">Bienvenue</h2>
           <p className="text-gray-600 mt-2">Connectez-vous ou créez un compte</p>
         </div>
